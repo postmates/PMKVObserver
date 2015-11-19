@@ -11,8 +11,10 @@
 		0AA68A1F1BFD9B780053C76D /* KVObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 0AA68A1E1BFD9B780053C76D /* KVObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9EE8AAF51BFD5B9B00739406 /* PMKVObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 9EE8AAF41BFD5B9B00739406 /* PMKVObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9EE8AAFC1BFD5B9B00739406 /* PMKVObserver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EE8AAF11BFD5B9B00739406 /* PMKVObserver.framework */; };
-		9EE8AB011BFD5B9B00739406 /* PMKVObserverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE8AB001BFD5B9B00739406 /* PMKVObserverTests.swift */; };
+		9EE8AB011BFD5B9B00739406 /* KVObserverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE8AB001BFD5B9B00739406 /* KVObserverTests.swift */; };
 		9EE8AB0C1BFD5BAA00739406 /* KVObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE8AB0B1BFD5BAA00739406 /* KVObserver.swift */; };
+		9EE8AB0E1BFE4CE000739406 /* PMKVObserverTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EE8AB0D1BFE4CE000739406 /* PMKVObserverTests.m */; };
+		9EE8AB101BFE4D9C00739406 /* KVOHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE8AB0F1BFE4D9C00739406 /* KVOHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,9 +34,11 @@
 		9EE8AAF41BFD5B9B00739406 /* PMKVObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PMKVObserver.h; sourceTree = "<group>"; };
 		9EE8AAF61BFD5B9B00739406 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9EE8AAFB1BFD5B9B00739406 /* PMKVObserverTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PMKVObserverTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		9EE8AB001BFD5B9B00739406 /* PMKVObserverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PMKVObserverTests.swift; sourceTree = "<group>"; };
+		9EE8AB001BFD5B9B00739406 /* KVObserverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KVObserverTests.swift; sourceTree = "<group>"; };
 		9EE8AB021BFD5B9B00739406 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9EE8AB0B1BFD5BAA00739406 /* KVObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KVObserver.swift; sourceTree = "<group>"; };
+		9EE8AB0D1BFE4CE000739406 /* PMKVObserverTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMKVObserverTests.m; sourceTree = "<group>"; };
+		9EE8AB0F1BFE4D9C00739406 /* KVOHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KVOHelper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,7 +93,9 @@
 		9EE8AAFF1BFD5B9B00739406 /* PMKVObserverTests */ = {
 			isa = PBXGroup;
 			children = (
-				9EE8AB001BFD5B9B00739406 /* PMKVObserverTests.swift */,
+				9EE8AB001BFD5B9B00739406 /* KVObserverTests.swift */,
+				9EE8AB0D1BFE4CE000739406 /* PMKVObserverTests.m */,
+				9EE8AB0F1BFE4D9C00739406 /* KVOHelper.swift */,
 				9EE8AB021BFD5B9B00739406 /* Info.plist */,
 			);
 			path = PMKVObserverTests;
@@ -213,7 +219,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9EE8AB011BFD5B9B00739406 /* PMKVObserverTests.swift in Sources */,
+				9EE8AB101BFE4D9C00739406 /* KVOHelper.swift in Sources */,
+				9EE8AB011BFD5B9B00739406 /* KVObserverTests.swift in Sources */,
+				9EE8AB0E1BFE4CE000739406 /* PMKVObserverTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -355,16 +363,19 @@
 		9EE8AB091BFD5B9B00739406 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = PMKVObserverTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.postmates.PMKVObserverTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		9EE8AB0A1BFD5B9B00739406 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = PMKVObserverTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.postmates.PMKVObserverTests;
@@ -400,6 +411,7 @@
 				9EE8AB0A1BFD5B9B00739406 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -6,14 +6,18 @@
 //  Copyright © 2015 Kevin Ballard. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#ifdef __cplusplus
+#define KVO_EXTERN extern "C"
+#else
+#define KVO_EXTERN extern
+#endif
 
 //! Project version number for PMKVObserver.
-FOUNDATION_EXPORT double PMKVObserverVersionNumber;
+KVO_EXTERN double PMKVObserverVersionNumber;
 
 //! Project version string for PMKVObserver.
-FOUNDATION_EXPORT const unsigned char PMKVObserverVersionString[];
+KVO_EXTERN const unsigned char PMKVObserverVersionString[];
 
-// In this header, you should import all the public headers of your framework using statements like #import <PMKVObserver/PublicHeader.h>
+#undef KVO_EXTERN
 
-
+#import <PMKVObserver/KVObserver.h>
