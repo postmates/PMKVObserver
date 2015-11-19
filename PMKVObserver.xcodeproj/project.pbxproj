@@ -7,9 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0AA68A1D1BFD9B5C0053C76D /* KVObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AA68A1C1BFD9B5C0053C76D /* KVObserver.m */; };
+		0AA68A1F1BFD9B780053C76D /* KVObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 0AA68A1E1BFD9B780053C76D /* KVObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9EE8AAF51BFD5B9B00739406 /* PMKVObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 9EE8AAF41BFD5B9B00739406 /* PMKVObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9EE8AAFC1BFD5B9B00739406 /* PMKVObserver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EE8AAF11BFD5B9B00739406 /* PMKVObserver.framework */; };
 		9EE8AB011BFD5B9B00739406 /* PMKVObserverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE8AB001BFD5B9B00739406 /* PMKVObserverTests.swift */; };
+		9EE8AB0C1BFD5BAA00739406 /* KVObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE8AB0B1BFD5BAA00739406 /* KVObserver.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,12 +26,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0AA68A1C1BFD9B5C0053C76D /* KVObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KVObserver.m; sourceTree = "<group>"; };
+		0AA68A1E1BFD9B780053C76D /* KVObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KVObserver.h; sourceTree = "<group>"; };
 		9EE8AAF11BFD5B9B00739406 /* PMKVObserver.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PMKVObserver.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9EE8AAF41BFD5B9B00739406 /* PMKVObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PMKVObserver.h; sourceTree = "<group>"; };
 		9EE8AAF61BFD5B9B00739406 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9EE8AAFB1BFD5B9B00739406 /* PMKVObserverTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PMKVObserverTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9EE8AB001BFD5B9B00739406 /* PMKVObserverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PMKVObserverTests.swift; sourceTree = "<group>"; };
 		9EE8AB021BFD5B9B00739406 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9EE8AB0B1BFD5BAA00739406 /* KVObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KVObserver.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +78,9 @@
 			isa = PBXGroup;
 			children = (
 				9EE8AAF41BFD5B9B00739406 /* PMKVObserver.h */,
+				9EE8AB0B1BFD5BAA00739406 /* KVObserver.swift */,
+				0AA68A1C1BFD9B5C0053C76D /* KVObserver.m */,
+				0AA68A1E1BFD9B780053C76D /* KVObserver.h */,
 				9EE8AAF61BFD5B9B00739406 /* Info.plist */,
 			);
 			path = PMKVObserver;
@@ -94,6 +103,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9EE8AAF51BFD5B9B00739406 /* PMKVObserver.h in Headers */,
+				0AA68A1F1BFD9B780053C76D /* KVObserver.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -194,6 +204,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9EE8AB0C1BFD5BAA00739406 /* KVObserver.swift in Sources */,
+				0AA68A1D1BFD9B5C0053C76D /* KVObserver.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,6 +320,7 @@
 		9EE8AB061BFD5B9B00739406 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -318,12 +331,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.postmates.PMKVObserver;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		9EE8AB071BFD5B9B00739406 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -376,6 +391,7 @@
 				9EE8AB071BFD5B9B00739406 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9EE8AB081BFD5B9B00739406 /* Build configuration list for PBXNativeTarget "PMKVObserverTests" */ = {
 			isa = XCConfigurationList;
