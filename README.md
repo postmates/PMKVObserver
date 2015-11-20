@@ -89,7 +89,9 @@ As this is a brand-new framework, it has not yet been battle-tested. The test su
 
 ## Requirements
 
-As part of this framework is implemented in Swift, it requires iOS 7 or later, or OS X 10.9 or later.
+Installing as a framework requires iOS 8 or later, or OS X 10.9 or later.
+
+If you install by copying the source into your project, it should work on iOS 7 or later (iOS 6 if you remove KVObserver.swift), and OS X 10.7 or later. Please note that it has not been tested on these versions.
 
 ## Installation
 
@@ -99,7 +101,7 @@ To install using [Carthage][], add the following to your Cartfile:
 github "postmates/PMKVObserver"
 ```
 
-You may also install manually by adding the framework to your workspace, or by adding the 3 files KVObserver.h, KVObserver.m, and KVObserver.swift to your project.
+You may also install manually by adding the framework to your workspace, or by adding the 3 files KVObserver.h, KVObserver.m, and (optionally) KVObserver.swift to your project.
 
 Once instaled, you can use this by adding `import PMKVObserver` (Swift) or `@import PMKVObserver;` (Objective-C) to your code.
 
