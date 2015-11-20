@@ -39,6 +39,8 @@
 		9EE8AB0B1BFD5BAA00739406 /* KVObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KVObserver.swift; sourceTree = "<group>"; };
 		9EE8AB0D1BFE4CE000739406 /* PMKVObserverTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMKVObserverTests.m; sourceTree = "<group>"; };
 		9EE8AB0F1BFE4D9C00739406 /* KVOHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KVOHelper.swift; sourceTree = "<group>"; };
+		9EE8AB121BFEB39600739406 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		9EE8AB141BFEB42C00739406 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,8 @@
 		9EE8AAE71BFD5B9B00739406 = {
 			isa = PBXGroup;
 			children = (
+				9EE8AB121BFEB39600739406 /* README.md */,
+				9EE8AB141BFEB42C00739406 /* LICENSE */,
 				9EE8AAF31BFD5B9B00739406 /* PMKVObserver */,
 				9EE8AAFF1BFD5B9B00739406 /* PMKVObserverTests */,
 				9EE8AAF21BFD5B9B00739406 /* Products */,
