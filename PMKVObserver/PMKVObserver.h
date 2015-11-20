@@ -6,18 +6,12 @@
 //  Copyright © 2015 Kevin Ballard. All rights reserved.
 //
 
-#ifdef __cplusplus
-#define KVO_EXTERN extern "C"
-#else
-#define KVO_EXTERN extern
-#endif
+@import Foundation;
 
 //! Project version number for PMKVObserver.
-KVO_EXTERN double PMKVObserverVersionNumber;
+FOUNDATION_EXPORT double PMKVObserverVersionNumber;
 
 //! Project version string for PMKVObserver.
-KVO_EXTERN const unsigned char PMKVObserverVersionString[];
-
-#undef KVO_EXTERN
+FOUNDATION_EXPORT const unsigned char PMKVObserverVersionString[];
 
 #import <PMKVObserver/KVObserver.h>
