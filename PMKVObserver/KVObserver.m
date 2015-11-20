@@ -118,7 +118,7 @@ typedef void (^ObserverCallback)(id observer, id object, NSDictionary<NSString *
 - (void)teardown {
     while (atomic_flag_test_and_set_explicit(&_cancelSpinlock, memory_order_acquire));
     if (_unsafeObject == nil) {
-        // we must have cleared it out in a concurrent shouldBlock cancel
+        // we must have cleared it out in a concurrent teardown
         atomic_flag_clear_explicit(&_cancelSpinlock, memory_order_release);
         return;
     }
