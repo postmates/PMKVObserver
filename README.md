@@ -103,7 +103,7 @@ github "postmates/PMKVObserver"
 
 You may also install manually by adding the framework to your workspace, or by adding the 3 files KVObserver.h, KVObserver.m, and (optionally) KVObserver.swift to your project.
 
-Once instaled, you can use this by adding `import PMKVObserver` (Swift) or `@import PMKVObserver;` (Objective-C) to your code.
+Once installed, you can use this by adding `import PMKVObserver` (Swift) or `@import PMKVObserver;` (Objective-C) to your code.
 
 ## Version History
 
