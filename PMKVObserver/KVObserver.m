@@ -164,22 +164,32 @@ typedef void (^ObserverCallback)(id observer, id object, NSDictionary<NSString *
 
 - (void)installDeallocSpiesForObject:(id)object observer:(nullable id)observer {
     PMKVObserverDeallocSpy *objectSpy = [[PMKVObserverDeallocSpy alloc] initWithObserver:self shouldBlock:YES];
-    objc_setAssociatedObject(object, (__bridge void *)self, objectSpy, OBJC_ASSOCIATION_RETAIN);
+    void * const key = [self deallocSpyAssociatedObjectKey];
+    objc_setAssociatedObject(object, key, objectSpy, OBJC_ASSOCIATION_RETAIN);
     if (observer && observer != object) {
         objectSpy = [[PMKVObserverDeallocSpy alloc] initWithObserver:self shouldBlock:NO];
-        objc_setAssociatedObject(observer, (__bridge void *)self, objectSpy, OBJC_ASSOCIATION_RETAIN);
+        objc_setAssociatedObject(observer, key, objectSpy, OBJC_ASSOCIATION_RETAIN);
     }
 }
 
 - (void)clearDeallocSpies {
     id object = _object;
+    void * const key = [self deallocSpyAssociatedObjectKey];
     if (object) {
-        objc_setAssociatedObject(object, (__bridge void *)self, nil, OBJC_ASSOCIATION_RETAIN);
+        objc_setAssociatedObject(object, key, nil, OBJC_ASSOCIATION_RETAIN);
     }
     id observer = _observer;
     if (observer) {
-        objc_setAssociatedObject(observer, (__bridge void *)self, nil, OBJC_ASSOCIATION_RETAIN);
+        objc_setAssociatedObject(observer, key, nil, OBJC_ASSOCIATION_RETAIN);
     }
+}
+
+- (void *)deallocSpyAssociatedObjectKey {
+    // We could return `self`, but that runs the risk of client code also trying to use us as a key
+    // (though that's rather unlikely).
+    // So instead lets return a pointer to one of our ivars. Doesn't really matter which one, so
+    // we'll go with the first one.
+    return &_object;
 }
 @end
 
