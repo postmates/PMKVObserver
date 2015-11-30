@@ -90,4 +90,17 @@ class KVObserverTests: XCTestCase {
         }
         XCTAssertNil(weakToken)
     }
+    
+    func testSameObserverObject() {
+        var fired = false
+        let token = KVObserver(observer: helper, object: helper, keyPath: "str") { [weak helper] observer, object, _, _ in
+            fired = true
+            XCTAssert(observer === helper)
+            XCTAssert(object === helper)
+            XCTAssertEqual(object.str, "foo")
+        }
+        helper.str = "foo"
+        XCTAssertTrue(fired)
+        token.cancel()
+    }
 }
