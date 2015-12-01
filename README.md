@@ -1,7 +1,7 @@
 # PMKVObserver
 
-![Version](https://img.shields.io/badge/version-v0.1-blue.svg)
-![Platform](https://img.shields.io/badge/platform-ios%20%7C%20osx-lightgrey.svg)
+[![Version](https://img.shields.io/badge/version-v0.1-blue.svg)](https://github.com/postmates/PMKVObserver/releases/latest)
+![Platforms](https://img.shields.io/badge/platforms-ios%20%7C%20osx%20%7C%20watchos%20%7C%20tvos-lightgrey.svg)
 ![Languages](https://img.shields.io/badge/languages-swift%20%7C%20objc-orange.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/postmates/PMKVObserver/blob/master/LICENSE)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)][Carthage]
@@ -89,7 +89,7 @@ As this is a brand-new framework, it has not yet been battle-tested. The test su
 
 ## Requirements
 
-Installing as a framework requires iOS 8 or later, or OS X 10.9 or later.
+Installing as a framework requires a minimum of iOS 8, OS X 10.9, watchOS 2.0, or tvOS 9.0.
 
 If you install by copying the source into your project, it should work on iOS 7 or later (iOS 6 if you remove KVObserver.swift), and OS X 10.7 or later. Please note that it has not been tested on these versions.
 
