@@ -108,8 +108,10 @@
     __block BOOL fired = NO;
     __weak PMKVObserver *weakToken;
     @autoreleasepool {
-        PMKVObserver *token = [PMKVObserver observeObject:self.helper keyPath:@"str" options:0 block:^(id  _Nonnull object, NSDictionary<NSString *,id> * _Nullable change, PMKVObserver * _Nonnull kvo) {
+        __block PMKVObserver *token;
+        token = [PMKVObserver observeObject:self.helper keyPath:@"str" options:0 block:^(id  _Nonnull object, NSDictionary<NSString *,id> * _Nullable change, PMKVObserver * _Nonnull kvo) {
             fired = YES;
+            (void)token; // capture it
         }];
         weakToken = token;
         self.helper.str = @"a";
