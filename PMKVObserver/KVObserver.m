@@ -9,6 +9,7 @@
 #import "KVObserver.h"
 #import <stdatomic.h>
 #import <objc/runtime.h>
+#import <pthread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,9 +21,15 @@ static void *kContext = &kContext;
 @end
 
 typedef NS_ENUM(uint_fast8_t, PMKVObserverState) {
+    /// KVO has finished being setup and can now be cancelled
     PMKVObserverStateSetup = 1 << 0,
+    /// -cancel has not yet been invoked
     PMKVObserverStateActive = 1 << 1,
-    PMKVObserverStateCancellable = (PMKVObserverStateSetup | PMKVObserverStateActive)
+    PMKVObserverStateCancellable = (PMKVObserverStateSetup | PMKVObserverStateActive),
+    
+    /// KVO has been successfully deregistered
+    /// This lets us skip the semaphore for subsequent cancels
+    PMKVObserverStateDeregistered = 1 << 2
 };
 
 typedef void (^Callback)(id object, NSDictionary<NSString *,id> * _Nullable change, PMKVObserver *kvo);
@@ -31,72 +38,72 @@ typedef void (^ObserverCallback)(id observer, id object, NSDictionary<NSString *
 @implementation PMKVObserver {
     __weak id _Nullable _object;
     // if we cancel because the object started dealloc, our __weak ivar will be nil already, so we need a non-weak version
+    // NB: _unsafeObject is ONLY accessed after init in -teardown and it's protected by the semaphore
     __unsafe_unretained id _Nullable _unsafeObject;
     __weak id _Nullable _observer;
     NSString *_keyPath;
     atomic_uint_fast8_t _state;
     BOOL _hasObserver;
     
-    // the callback needs a spinlock because we need to be able to  nil it out in -cancel,
-    // but this may happen while an observation block is executing.
-    atomic_flag _spinlock;
+    // use an activity count for _callback. We need to nil it out once cancelled, but since it's reference-counted we
+    // can't just use an atomic pointer. We can't use a spinlock either because that's unsafe on iOS, so instead we
+    // keep our own reference count of when it's being used (either by the callback or -teardown) and nil it out once
+    // the count hits zero. 16 bits ought to be enough.
+    atomic_uint_fast16_t _activityCount;
     id _Nullable _callback;
     
-    // cancelling also needs a spinlock because if the object deallocates immediately after -cancel is
-    // invoked on another thread, we need to block the object deallocation until the cancel succeeds.
-    atomic_flag _cancelSpinlock;
+    // we need to be able to block in -teardown until KVO is deregistered (both to preserve the guarantee of -cancel
+    // and to ensure the KVO is deregistered before the object deallocates). Can't use a spinlock because it's unsafe
+    // on iOS, so we settle for a mutex.
+    pthread_mutex_t _mutex;
 }
 
-+ (instancetype)observeObject:(id)object keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options block:(void (^)(id object, NSDictionary<NSString *,id> * _Nullable change, PMKVObserver *kvo))block {
++ (instancetype)observeObject:(id)object keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options block:(Callback)block {
     return [[self alloc] initWithObject:object keyPath:keyPath options:options block:block];
 }
 
-+ (instancetype)observeObject:(id)object observer:(id)observer keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options block:(void (^)(id observer, id object, NSDictionary<NSString *,id> * _Nullable change, PMKVObserver *kvo))block {
++ (instancetype)observeObject:(id)object observer:(id)observer keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options block:(ObserverCallback)block {
     return [[self alloc] initWithObserver:observer object:object keyPath:keyPath options:options block:block];
 }
 
 - (instancetype)initWithObject:(id)object keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options block:(Callback)block {
     if ((self = [super init])) {
-        _observer = nil;
-        _hasObserver = NO;
-        
-        _object = object;
-        _unsafeObject = object;
-        _keyPath = [keyPath copy];
-        _spinlock = (atomic_flag)ATOMIC_FLAG_INIT;
-        _callback = (id)[block copy];
-        _cancelSpinlock = (atomic_flag)ATOMIC_FLAG_INIT;
-        atomic_init(&_state, PMKVObserverStateActive);
-        [self installDeallocSpiesForObject:object observer:nil];
-        [object addObserver:self forKeyPath:_keyPath options:options context:kContext];
-        if ((atomic_fetch_or(&_state, PMKVObserverStateSetup) & PMKVObserverStateActive) == 0) {
-            // we cancelled during init, shut it down
-            [self teardown];
-        }
+        setup(self, nil, object, keyPath, options, (id)[block copy]);
     }
     return self;
 }
 
-- (instancetype)initWithObserver:(id)observer object:(id)object keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options block:(void (^)(id observer, id object, NSDictionary<NSString *,id> * _Nullable change, PMKVObserver *kvo))block {
+- (instancetype)initWithObserver:(id)observer object:(id)object keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options block:(ObserverCallback)block {
     if ((self = [super init])) {
-        _observer = observer;
-        _hasObserver = YES;
-        
-        _object = object;
-        _unsafeObject = object;
-        _keyPath = [keyPath copy];
-        _spinlock = (atomic_flag)ATOMIC_FLAG_INIT;
-        _callback = (id)[block copy];
-        _cancelSpinlock = (atomic_flag)ATOMIC_FLAG_INIT;
-        atomic_init(&_state, PMKVObserverStateActive);
-        [self installDeallocSpiesForObject:object observer:observer];
-        [object addObserver:self forKeyPath:_keyPath options:options context:kContext];
-        if ((atomic_fetch_or(&_state, PMKVObserverStateSetup) & PMKVObserverStateActive) == 0) {
-            // we cancelled during init, shut it down
-            [self teardown];
-        }
+        setup(self, observer, object, keyPath, options, (id)[block copy]);
     }
     return self;
+}
+
+static void setup(PMKVObserver *self, id _Nullable NS_VALID_UNTIL_END_OF_SCOPE observer, id NS_VALID_UNTIL_END_OF_SCOPE object, NSString *keyPath, NSKeyValueObservingOptions options, id callback) {
+    // NS_VALID_UNTIL_END_OF_SCOPE ensures the object/observer stay alive until we've finished the observation process
+    // We can't have either one of them dealloc before we finish with -addObserver:forKeyPath:options:context: because
+    // we can't unregister KVO until that method finishes, and we can't let the object dealloc before KVO is unregistered.
+    
+    self->_observer = observer;
+    self->_hasObserver = observer != nil;
+    
+    self->_object = object;
+    self->_unsafeObject = object;
+    self->_keyPath = [keyPath copy];
+    atomic_init(&self->_activityCount, 1);
+    self->_callback = callback;
+    int retval;
+    while ((retval = pthread_mutex_init(&self->_mutex, NULL))) {
+        NSCAssert(retval == EAGAIN, @"pthread_mutex_init: %s", strerror(retval));
+    }
+    atomic_init(&self->_state, PMKVObserverStateActive);
+    [self installDeallocSpiesForObject:object observer:observer];
+    [object addObserver:self forKeyPath:self->_keyPath options:options context:kContext];
+    if ((atomic_fetch_or_explicit(&self->_state, PMKVObserverStateSetup, memory_order_release) & PMKVObserverStateActive) == 0) {
+        // we cancelled during init, shut it down
+        [self teardown];
+    }
 }
 
 - (instancetype)init {
@@ -108,26 +115,43 @@ typedef void (^ObserverCallback)(id observer, id object, NSDictionary<NSString *
 }
 
 - (void)cancel:(BOOL)shouldBlock {
-    // because we must unregister KVO before the object finishes deallocating, if `shouldBlock` is set,
-    // then we need to enter the spinlock anyway.
-    if ((atomic_exchange(&_state, 0) & PMKVObserverStateCancellable) == PMKVObserverStateCancellable || shouldBlock) {
+    // When read load the state, if it says it's Cancellable, this means we can see the Setup flag from init.
+    // But we need a synchronizes-with edge to guarantee we can also see the KVO state.
+    // We only need that edge if it's been Setup (and not Deregistered), so defer the fence until then.
+    uint_fast8_t oldState = atomic_fetch_and_explicit(&_state, ~PMKVObserverStateActive, memory_order_relaxed);
+    if ((oldState & PMKVObserverStateDeregistered) != 0) {
+        // if we've already deregistered the KVO there's no reason to block
+        return;
+    }
+    // If we're cancelling in response to the object deallocating, we MUST block. Otherwise, we don't have to block because the
+    // _state flag ensures the callback cannot be invoked again even though we haven't actually unregistered yet.
+    if (shouldBlock || (oldState & PMKVObserverStateCancellable) == PMKVObserverStateCancellable) {
+        atomic_thread_fence(memory_order_acquire);
         [self teardown];
     }
 }
 
 - (void)teardown {
-    while (atomic_flag_test_and_set_explicit(&_cancelSpinlock, memory_order_acquire));
-    if (_unsafeObject == nil) {
-        // we must have cleared it out in a concurrent teardown
-        atomic_flag_clear_explicit(&_cancelSpinlock, memory_order_release);
-        return;
+    int retval = pthread_mutex_lock(&_mutex);
+    NSAssert(__builtin_expect(retval, 0) == 0, @"pthread_mutex_lock: %s", strerror(retval));
+    @try {
+        if (_unsafeObject == nil) {
+            // we must have already cleared it in a concurrent teardown
+            return;
+        }
+        [_unsafeObject removeObserver:self forKeyPath:_keyPath context:kContext];
+        _unsafeObject = nil;
     }
-    [_unsafeObject removeObserver:self forKeyPath:_keyPath context:kContext];
-    _unsafeObject = nil;
-    atomic_flag_clear_explicit(&_cancelSpinlock, memory_order_release);
-    while (atomic_flag_test_and_set_explicit(&_spinlock, memory_order_acquire));
-    _callback = nil;
-    atomic_flag_clear_explicit(&_spinlock, memory_order_release);
+    @finally {
+        retval = pthread_mutex_unlock(&_mutex);
+        NSAssert(__builtin_expect(retval, 0) == 0, @"pthread_mutex_unlock: %s", strerror(retval));
+    }
+    atomic_fetch_or_explicit(&_state, PMKVObserverStateDeregistered, memory_order_relaxed);
+    // only one caller can ever make it to this point
+    // "release" our callback. A simple decrement suffices.
+    if (atomic_fetch_sub_explicit(&_activityCount, 1, memory_order_relaxed) == 1) {
+        _callback = nil;
+    }
     [self clearDeallocSpies];
 }
 
@@ -136,18 +160,28 @@ typedef void (^ObserverCallback)(id observer, id object, NSDictionary<NSString *
         return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
     if (keyPath == nil || object == nil) {
-        // how is this even possible?
+        // I don't know how this is even possible, but the declaration has them as nullable. Bail out if this happens.
         return;
     }
-    if ((atomic_load(&_state) & PMKVObserverStateActive) == 0) {
+    if ((atomic_load_explicit(&_state, memory_order_relaxed) & PMKVObserverStateActive) == 0) {
         // we must have cancelled on another thread at the same time. Skip the callback.
         return;
     }
-    while (atomic_flag_test_and_set_explicit(&_spinlock, memory_order_acquire));
+    // We need to "retain" our callback, unless it's already at zero.
+    uint_fast16_t count = atomic_load_explicit(&_activityCount, memory_order_relaxed);
+    do {
+        if (count == 0) {
+            // callback was fully released and should be treated as nil
+            return;
+        }
+        NSAssert(__builtin_expect(count != UINT_FAST8_MAX, 0), @"callback activity count hit UINT_FAST8_MAX");
+    } while (!atomic_compare_exchange_weak_explicit(&_activityCount, &count, count+1, memory_order_relaxed, memory_order_relaxed));
+    // we've now "retained" it and it's safe to access
     id callback = _callback;
-    atomic_flag_clear_explicit(&_spinlock, memory_order_release);
-    if (!callback) {
-        // again, we must have cancelled at the same time. Skip the callback.
+    // now "release" it
+    if (atomic_fetch_sub_explicit(&_activityCount, 1, memory_order_relaxed) == 1) {
+        _callback = nil;
+        // we were cancelled during the preceding code
         return;
     }
     if (_hasObserver) {
