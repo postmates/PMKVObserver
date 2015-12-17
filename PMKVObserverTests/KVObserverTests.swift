@@ -3,7 +3,7 @@
 //  PMKVObserverTests
 //
 //  Created by Kevin Ballard on 11/18/15.
-//  Copyright © 2015 Kevin Ballard. All rights reserved.
+//  Copyright © 2015 Postmates. All rights reserved.
 //
 
 import XCTest
