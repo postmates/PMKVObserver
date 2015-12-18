@@ -1,6 +1,6 @@
 # PMKVObserver
 
-[![Version](https://img.shields.io/badge/version-v1.0-blue.svg)](https://github.com/postmates/PMKVObserver/releases/latest)
+[![Version](https://img.shields.io/badge/version-v1.0.1-blue.svg)](https://github.com/postmates/PMKVObserver/releases/latest)
 ![Platforms](https://img.shields.io/badge/platforms-ios%20%7C%20osx%20%7C%20watchos%20%7C%20tvos-lightgrey.svg)
 ![Languages](https://img.shields.io/badge/languages-swift%20%7C%20objc-orange.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/postmates/PMKVObserver/blob/master/LICENSE)
@@ -107,7 +107,11 @@ Once installed, you can use this by adding `import PMKVObserver` (Swift) or `@im
 
 ## Version History
 
-#### v1.0
+#### v1.0.1 (12/17/2005)
+
+* Stop leaking our `pthread_mutex_t`s.
+
+#### v1.0 (12/17/2005)
 
 Initial release.
 
