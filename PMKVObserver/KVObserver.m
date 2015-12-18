@@ -110,6 +110,13 @@ static void setup(PMKVObserver *self, id _Nullable NS_VALID_UNTIL_END_OF_SCOPE o
     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"-[PMKVObserver init] is not available" userInfo:nil];
 }
 
+- (void)dealloc {
+    int retval = pthread_mutex_destroy(&_mutex);
+    if (__builtin_expect(retval, 0) != 0) {
+        NSLog(@"PMKVObserver: pthread_mutex_destroy: %s", strerror(retval));
+    }
+}
+
 - (void)cancel {
     [self cancel:NO];
 }
