@@ -107,11 +107,11 @@ Once installed, you can use this by adding `import PMKVObserver` (Swift) or `@im
 
 ## Version History
 
-#### v1.0.1 (12/17/2005)
+#### v1.0.1 (12/17/2015)
 
 * Stop leaking our `pthread_mutex_t`s.
 
-#### v1.0 (12/17/2005)
+#### v1.0 (12/17/2015)
 
 Initial release.
 
