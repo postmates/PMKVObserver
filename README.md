@@ -24,7 +24,7 @@ PMKVObserver provides a safe block-based wrapper around Key-Value Observing, wit
 // Observe an object for as long as the object is alive.
 _ = KVObserver(object: user, keyPath: "fullName") { object, _, _ in
     // `object` has the same type as `user`
-    NSLog("User's full name changed to %@", object.fullName)
+    print("User's full name changed to \(object.fullName)")
 }
 
 // Convenience methods for working with the change dictionary
@@ -33,20 +33,20 @@ _ = KVObserver(object: user, keyPath: "fullName", options: [.Old, .New]) { _, ch
     let old = change.old as? String
     let new = change.new as? String
     if old != new {
-        NSLog("User's full name changed to %@", new ?? "nil")
+        print("User's full name changed to \(new ?? "nil")")
     }
 }
 
 // Unregistering can be done from within the block, even in an .Initial callback
 _ = KVObserver(object: user, keyPath: "fullName", options: [.Initial]) { object, _, kvo in
     guard !object.fullName.isEmpty else { return }
-    NSLog("User's full name is %@", object.fullName)
+    print("User's full name is \(object.fullName)")
     kvo.cancel()
 }
 
 // Or you can unregister externally
 let token = KVObserver(object: user, keyPath: "fullName") { object, _, _ in
-    NSLog("User's full name changed to %@", object.fullName)
+    print("User's full name changed to \(object.fullName)")
 }
 // ... sometime later ...
 token.cancel()
