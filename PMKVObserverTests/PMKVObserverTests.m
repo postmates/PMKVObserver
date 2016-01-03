@@ -239,4 +239,67 @@
     XCTAssertNil(weakToken);
 }
 
+- (void)testCancelOnBackgroundThread {
+    __block BOOL fired = NO;
+    dispatch_queue_t queue = dispatch_queue_create("com.postmates.PMKVObserver.queue", DISPATCH_QUEUE_SERIAL);
+    NSString* value1 = @"value1";
+    NSString* value2 = @"value2";
+
+    PMKVObserver *token = [PMKVObserver observeObject:self.helper keyPath:@"str" options:NSKeyValueObservingOptionNew block:^(id  _Nonnull object, NSDictionary<NSString *,id> * _Nullable change, PMKVObserver * _Nonnull kvo) {
+        XCTAssertEqualObjects([object str], value1);
+        fired = YES;
+    }];
+    dispatch_sync(queue, ^{
+        self.helper.str = value1;
+        [token cancel];
+        self.helper.str = value2;
+    });
+
+    XCTAssertTrue(fired);
+}
+
+- (void)testObserverDeallocatedOnBackgroundThread {
+    __block BOOL fired = NO;
+    dispatch_queue_t queue = dispatch_queue_create("com.postmates.PMKVObserver.queue", DISPATCH_QUEUE_SERIAL);
+    NSString* value1 = @"value1";
+    NSString* value2 = @"value2";
+
+    __block NSObject* observer = [[NSObject alloc] init];
+    [PMKVObserver observeObject:self.helper observer:observer keyPath:@"str" options:NSKeyValueObservingOptionNew block:^(id  _Nonnull observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nullable change, PMKVObserver * _Nonnull kvo) {
+        XCTAssertEqualObjects([object str], value1);
+        fired = YES;
+    }];
+
+    dispatch_sync(queue, ^{
+        self.helper.str = value1;
+        observer = nil;
+        self.helper.str = value2;
+    });
+
+    XCTAssertTrue(fired);
+}
+
+- (void)testRegisterAndCancelOnBackgroundThreads {
+    __block BOOL fired = NO;
+    dispatch_queue_t queue1 = dispatch_queue_create("com.postmates.PMKVObserver.queue1", DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t queue2 = dispatch_queue_create("com.postmates.PMKVObserver.queue2", DISPATCH_QUEUE_SERIAL);
+    NSString* value1 = @"value1";
+    NSString* value2 = @"value2";
+
+    __block PMKVObserver *token = nil;
+    dispatch_sync(queue1, ^{
+        token = [PMKVObserver observeObject:self.helper observer:self keyPath:@"str" options:NSKeyValueObservingOptionNew block:^(id  _Nonnull observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nullable change, PMKVObserver * _Nonnull kvo) {
+            XCTAssertEqualObjects([object str], value1);
+            fired = YES;
+        }];
+    });
+    self.helper.str = value1;
+    dispatch_sync(queue2, ^{
+        [token cancel];
+        self.helper.str = value2;
+    });
+
+    XCTAssertTrue(fired);
+}
+
 @end
