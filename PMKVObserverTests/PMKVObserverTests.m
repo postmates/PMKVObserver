@@ -239,4 +239,37 @@
     XCTAssertNil(weakToken);
 }
 
+- (void)testCancelTwice {
+    __block BOOL fired = NO;
+    PMKVObserver *token = [PMKVObserver observeObject:self.helper keyPath:@"str" options:0 block:^(id  _Nonnull object, NSDictionary<NSString *,id> * _Nullable change, PMKVObserver * _Nonnull kvo) {
+        fired = YES;
+    }];
+    self.helper.str = @"foo";
+    XCTAssertTrue(fired);
+    fired = NO;
+    [token cancel];
+    [token cancel];
+    self.helper.str = @"bar";
+    XCTAssertFalse(fired);
+}
+
+- (void)testCancelConcurrently {
+    __block BOOL fired = NO;
+    PMKVObserver *token = [PMKVObserver observeObject:self.helper keyPath:@"str" options:0 block:^(id  _Nonnull object, NSDictionary<NSString *,id> * _Nullable change, PMKVObserver * _Nonnull kvo) {
+        fired = YES;
+    }];
+    self.helper.str = @"foo";
+    XCTAssertTrue(fired);
+    fired = NO;
+    dispatch_group_t group = dispatch_group_create();
+    for (int i = 0; i < 2; ++i) {
+        dispatch_group_async(group, dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+            [token cancel];
+        });
+    }
+    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    self.helper.str = @"bar";
+    XCTAssertFalse(fired);
+}
+
 @end
