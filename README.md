@@ -5,6 +5,7 @@
 ![Languages](https://img.shields.io/badge/languages-swift%20%7C%20objc-orange.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/postmates/PMKVObserver/blob/master/LICENSE)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)][Carthage]
+[![CocoaPods](https://img.shields.io/cocoapods/v/PMKVObserver.svg)](http://cocoadocs.org/docsets/PMKVObserver)
 
 [Carthage]: https://github.com/carthage/carthage
 
