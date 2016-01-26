@@ -12,7 +12,7 @@ PMKVObserver provides a safe block-based wrapper around Key-Value Observing, wit
 * First-class support for both Obj-C and Swift, including strong typing in the Swift API.
                    DESC
   s.homepage     = "https://github.com/postmates/PMKVObserver"
-  s.license      = { :type => "MIT", :file => "LICENSE" }
+  s.license      = { :type => "MIT", :file => "LICENSE-MIT" }
   s.author       = { "Kevin Ballard" => "kevin.ballard@postmates.com" }
   s.source       = { :git => "https://github.com/postmates/PMKVObserver.git", :tag => "v#{s.version}" }
   s.source_files = "PMKVObserver"

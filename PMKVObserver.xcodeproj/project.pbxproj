@@ -30,6 +30,7 @@
 /* Begin PBXFileReference section */
 		0AA68A1C1BFD9B5C0053C76D /* KVObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KVObserver.m; sourceTree = "<group>"; };
 		0AA68A1E1BFD9B780053C76D /* KVObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KVObserver.h; sourceTree = "<group>"; };
+		9E681D171C58312500422CE4 /* LICENSE-APACHE */ = {isa = PBXFileReference; lastKnownFileType = text; path = "LICENSE-APACHE"; sourceTree = "<group>"; };
 		9EE8AAF11BFD5B9B00739406 /* PMKVObserver.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PMKVObserver.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9EE8AAF41BFD5B9B00739406 /* PMKVObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PMKVObserver.h; sourceTree = "<group>"; };
 		9EE8AAF61BFD5B9B00739406 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -40,7 +41,7 @@
 		9EE8AB0D1BFE4CE000739406 /* PMKVObserverTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMKVObserverTests.m; sourceTree = "<group>"; };
 		9EE8AB0F1BFE4D9C00739406 /* KVOHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KVOHelper.swift; sourceTree = "<group>"; };
 		9EE8AB121BFEB39600739406 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		9EE8AB141BFEB42C00739406 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		9EE8AB141BFEB42C00739406 /* LICENSE-MIT */ = {isa = PBXFileReference; lastKnownFileType = text; path = "LICENSE-MIT"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,7 +67,8 @@
 			isa = PBXGroup;
 			children = (
 				9EE8AB121BFEB39600739406 /* README.md */,
-				9EE8AB141BFEB42C00739406 /* LICENSE */,
+				9E681D171C58312500422CE4 /* LICENSE-APACHE */,
+				9EE8AB141BFEB42C00739406 /* LICENSE-MIT */,
 				9EE8AAF31BFD5B9B00739406 /* PMKVObserver */,
 				9EE8AAFF1BFD5B9B00739406 /* PMKVObserverTests */,
 				9EE8AAF21BFD5B9B00739406 /* Products */,
