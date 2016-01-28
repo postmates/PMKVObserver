@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "PMKVObserver"
-  s.version      = "1.0.2"
+  s.version      = "1.0.3"
   s.summary      = "Modern thread-safe and type-safe key-value observing for Swift and Objective-C."
   s.description  = <<-DESC
 PMKVObserver provides a safe block-based wrapper around Key-Value Observing, with APIs for both Obj-C and Swift. Features include:
