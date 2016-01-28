@@ -72,4 +72,15 @@ extension KVObserver {
             self.rawDict = rawDict
         }
     }
+    
+    /// Returns `true` iff the observer has already been cancelled.
+    ///
+    /// Returns `true` if `cancel()` has been invoked on any thread. If `cancel()` is invoked
+    /// concurrently with accessing this property, it may or may not see the cancellation depending
+    /// on the precise timing involved.
+    ///
+    /// - Note: This property does not support key-value observing.
+    @nonobjc public var isCancelled: Bool {
+        return __cancelled
+    }
 }

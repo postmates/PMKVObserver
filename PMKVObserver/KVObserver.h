@@ -68,6 +68,15 @@ __attribute__((objc_subclassing_restricted))
 
 /// Unregisters the KVO. This can be called multiple times and can be called from any thread.
 - (void)cancel;
+
+/// Returns \c YES iff the observer has already been cancelled.
+///
+/// Returns \c YES if \c -cancel has been invoked on any thread. If \c -cancel is invoked
+/// concurrently with accessing this property, it may or may not see the cancellation depending
+/// on the precise timing involved.
+///
+/// \note This property does not support key-value observing.
+@property (atomic, readonly, getter=isCancelled) BOOL cancelled __attribute__((swift_private));
 @end
 
 NS_ASSUME_NONNULL_END

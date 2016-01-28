@@ -278,4 +278,14 @@
     XCTAssertFalse(fired);
 }
 
+- (void)testIsCancelled {
+    PMKVObserver *token = [PMKVObserver observeObject:self.helper keyPath:@"str" options:0 block:^(id  _Nonnull object, NSDictionary<NSString *,id> * _Nullable change, PMKVObserver * _Nonnull kvo) {
+    }];
+    XCTAssertFalse(token.cancelled);
+    self.helper.str = @"foo";
+    XCTAssertFalse(token.cancelled);
+    [token cancel];
+    XCTAssertTrue(token.cancelled);
+}
+
 @end

@@ -123,6 +123,10 @@ static void setup(PMKVObserver *self, id _Nullable NS_VALID_UNTIL_END_OF_SCOPE o
     }
 }
 
+- (BOOL)isCancelled {
+    return (atomic_load_explicit(&_state, memory_order_relaxed) & PMKVObserverStateActive) == 0;
+}
+
 - (void)cancel {
     [self cancel:NO];
 }
