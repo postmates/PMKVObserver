@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/badge/version-v1.0.3-blue.svg)](https://github.com/postmates/PMKVObserver/releases/latest)
 ![Platforms](https://img.shields.io/badge/platforms-ios%20%7C%20osx%20%7C%20watchos%20%7C%20tvos-lightgrey.svg)
 ![Languages](https://img.shields.io/badge/languages-swift%20%7C%20objc-orange.svg)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/postmates/PMKVObserver/blob/master/LICENSE)
+![License](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)][Carthage]
 [![CocoaPods](https://img.shields.io/cocoapods/v/PMKVObserver.svg)](http://cocoadocs.org/docsets/PMKVObserver)
 
