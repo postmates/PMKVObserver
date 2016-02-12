@@ -99,7 +99,7 @@ If you install by copying the source into your project, it should work on iOS 7 
 To install using [Carthage][], add the following to your Cartfile:
 
 ```
-github "postmates/PMKVObserver"
+github "postmates/PMKVObserver" ~> 1.0
 ```
 
 You may also install manually by adding the framework to your workspace, or by adding the 3 files KVObserver.h, KVObserver.m, and (optionally) KVObserver.swift to your project.
