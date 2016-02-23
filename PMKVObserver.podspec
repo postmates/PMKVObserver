@@ -15,8 +15,18 @@ PMKVObserver provides a safe block-based wrapper around Key-Value Observing, wit
   s.license      = { :type => "MIT", :file => "LICENSE-MIT" }
   s.author       = { "Kevin Ballard" => "kevin.ballard@postmates.com" }
   s.source       = { :git => "https://github.com/postmates/PMKVObserver.git", :tag => "v#{s.version}" }
-  s.source_files = "PMKVObserver"
   s.requires_arc = true
+
+
+  s.subspec 'ObjC' do |ss|
+    ss.source_files = 'PMKVObserver/**/*.{h,m}'
+  end
+
+  s.subspec 'Swift' do |ss|
+      ss.ios.deployment_target = '8.0'
+      ss.source_files = 'PMKVObserver/**/*.{swift}'
+      ss.dependency 'PMKVObserver/ObjC'
+  end
 
   s.ios.deployment_target = "8.0"
   s.osx.deployment_target = "10.9"
