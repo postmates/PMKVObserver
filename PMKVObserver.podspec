@@ -19,11 +19,10 @@ PMKVObserver provides a safe block-based wrapper around Key-Value Observing, wit
 
 
   s.subspec 'ObjC' do |ss|
-    ss.source_files = 'PMKVObserver/**/*.{h,m}'
+      ss.source_files = 'PMKVObserver/**/*.{h,m}'
   end
 
   s.subspec 'Swift' do |ss|
-      ss.ios.deployment_target = '8.0'
       ss.source_files = 'PMKVObserver/**/*.{swift}'
       ss.dependency 'PMKVObserver/ObjC'
   end
