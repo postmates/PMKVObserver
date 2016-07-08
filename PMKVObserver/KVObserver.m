@@ -38,8 +38,8 @@ typedef NS_ENUM(uint_fast8_t, PMKVObserverState) {
     PMKVObserverStateDeregistered = 1 << 2
 };
 
-typedef void (^Callback)(id object, NSDictionary<NSString *,id> * _Nullable change, PMKVObserver *kvo);
-typedef void (^ObserverCallback)(id observer, id object, NSDictionary<NSString *,id> * _Nullable change, PMKVObserver *kvo);
+typedef void (^Callback)(id object, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change, PMKVObserver *kvo);
+typedef void (^ObserverCallback)(id observer, id object, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change, PMKVObserver *kvo);
 
 @implementation PMKVObserver {
     __weak id _Nullable _object;
