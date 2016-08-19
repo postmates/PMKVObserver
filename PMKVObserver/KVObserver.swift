@@ -17,19 +17,20 @@ import Foundation
 public typealias KVObserver = PMKVObserver
 
 extension KVObserver {
+    
     /// Establishes a KVO relationship to `object`. The KVO will be active until `object` deallocates or
     /// until the `cancel()` method is invoked.
-    public convenience init<Object: AnyObject>(object: Object, keyPath: String, options: NSKeyValueObservingOptions = [], block: (object: Object, change: Change, kvo: KVObserver) -> Void) {
+    public convenience init<Object: AnyObject>(object: Object, keyPath: String, options: NSKeyValueObservingOptions = [], block: @escaping (_ object: Object, _ change: Change, _ kvo: KVObserver) -> Void) {
         self.init(__object: object, keyPath: keyPath, options: options, block: { (object, change, kvo) in
-            block(object: unsafeDowncast(object, to: Object.self), change: Change(rawDict: change), kvo: kvo)
+            block(unsafeDowncast(object as AnyObject, to: Object.self), Change(rawDict: change), kvo)
         })
     }
     
     /// Establishes a KVO relationship to `object`. The KVO will be active until either `object` or `observer`
     /// deallocates or until the `cancel()` method is invoked.
-    public convenience init<T: AnyObject, Object: AnyObject>(observer: T, object: Object, keyPath: String, options: NSKeyValueObservingOptions = [], block: (observer: T, object: Object, change: Change, kvo: KVObserver) -> Void) {
+    public convenience init<T: AnyObject, Object: AnyObject>(observer: T, object: Object, keyPath: String, options: NSKeyValueObservingOptions = [], block: @escaping (_ observer: T, _ object: Object, _ change: Change, _ kvo: KVObserver) -> Void) {
         self.init(__observer: observer, object: object, keyPath: keyPath, options: options, block: { (observer, object, change, kvo) in
-            block(observer: unsafeDowncast(observer, to: T.self), object: unsafeDowncast(object, to: Object.self), change: Change(rawDict: change), kvo: kvo)
+            block(unsafeDowncast(observer as AnyObject, to: T.self), unsafeDowncast(object as AnyObject, to: Object.self), Change(rawDict: change), kvo)
         })
     }
     
@@ -43,13 +44,13 @@ extension KVObserver {
         
         /// The old value from the change.
         /// - seealso: `NSKeyValueChangeOldKey`
-        public var old: AnyObject? {
+        public var old: Any? {
             return self.rawDict?[NSKeyValueChangeKey.oldKey]
         }
         
         /// The new value from the change.
         /// - seealso: `NSKeyValueChangeNewKey`
-        public var new: AnyObject? {
+        public var new: Any? {
             return self.rawDict?[NSKeyValueChangeKey.newKey]
         }
         
@@ -66,9 +67,9 @@ extension KVObserver {
         }
         
         /// The raw change dictionary passed to `observeValueForKeyPath(_:ofObject:change:context:)`.
-        public let rawDict: [NSKeyValueChangeKey: AnyObject]?
+        public let rawDict: [NSKeyValueChangeKey: Any]?
         
-        private init(rawDict: [NSKeyValueChangeKey: AnyObject]?) {
+        fileprivate init(rawDict: [NSKeyValueChangeKey: Any]?) {
             self.rawDict = rawDict
         }
     }
