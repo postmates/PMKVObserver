@@ -17,7 +17,6 @@ import Foundation
 public typealias KVObserver = PMKVObserver
 
 extension KVObserver {
-    
     /// Establishes a KVO relationship to `object`. The KVO will be active until `object` deallocates or
     /// until the `cancel()` method is invoked.
     public convenience init<Object: AnyObject>(object: Object, keyPath: String, options: NSKeyValueObservingOptions = [], block: @escaping (_ object: Object, _ change: Change, _ kvo: KVObserver) -> Void) {
