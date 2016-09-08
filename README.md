@@ -1,6 +1,6 @@
 # PMKVObserver
 
-[![Version](https://img.shields.io/badge/version-v1.0.4-blue.svg)](https://github.com/postmates/PMKVObserver/releases/latest)
+[![Version](https://img.shields.io/badge/version-v2.0.0-blue.svg)](https://github.com/postmates/PMKVObserver/releases/latest)
 ![Platforms](https://img.shields.io/badge/platforms-ios%20%7C%20osx%20%7C%20watchos%20%7C%20tvos-lightgrey.svg)
 ![Languages](https://img.shields.io/badge/languages-swift%20%7C%20objc-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)
@@ -29,7 +29,7 @@ _ = KVObserver(object: user, keyPath: "fullName") { object, _, _ in
 }
 
 // Convenience methods for working with the change dictionary
-_ = KVObserver(object: user, keyPath: "fullName", options: [.Old, .New]) { _, change, _ in
+_ = KVObserver(object: user, keyPath: "fullName", options: [.old, .new]) { _, change, _ in
     // unfortunately we don't know what the type of fullName is, so change uses AnyObject
     let old = change.old as? String
     let new = change.new as? String
@@ -38,8 +38,8 @@ _ = KVObserver(object: user, keyPath: "fullName", options: [.Old, .New]) { _, ch
     }
 }
 
-// Unregistering can be done from within the block, even in an .Initial callback
-_ = KVObserver(object: user, keyPath: "fullName", options: [.Initial]) { object, _, kvo in
+// Unregistering can be done from within the block, even in an .initial callback
+_ = KVObserver(object: user, keyPath: "fullName", options: [.initial]) { object, _, kvo in
     guard !object.fullName.isEmpty else { return }
     print("User's full name is \(object.fullName)")
     kvo.cancel()
@@ -99,7 +99,13 @@ If you install by copying the source into your project, it should work on iOS 7 
 To install using [Carthage][], add the following to your Cartfile:
 
 ```
-github "postmates/PMKVObserver" ~> 1.0
+github "postmates/PMKVObserver" ~> 2.0
+```
+
+This version supports Swift 3.0. For Swift 2.3, use the following instead:
+
+```
+github "postmates/PMKVObserver" "v1.0.5"
 ```
 
 You may also install manually by adding the framework to your workspace, or by adding the 3 files KVObserver.h, KVObserver.m, and (optionally) KVObserver.swift to your project.
@@ -119,6 +125,14 @@ Licensed under either of
 Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you shall be dual licensed as above, without any additional terms or conditions.
 
 ## Version History
+
+#### v2.0.0 (2016-09-08)
+
+* Update for Swift 3.0.
+
+#### v1.0.5 (2016-09-08)
+
+* Update for Swift 2.3.
 
 #### v1.0.4 (2016-03-02)
 
