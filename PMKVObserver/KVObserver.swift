@@ -19,17 +19,17 @@ public typealias KVObserver = PMKVObserver
 extension KVObserver {
     /// Establishes a KVO relationship to `object`. The KVO will be active until `object` deallocates or
     /// until the `cancel()` method is invoked.
-    public convenience init<Object: AnyObject>(object: Object, keyPath: String, options: NSKeyValueObservingOptions = [], block: (object: Object, change: Change, kvo: KVObserver) -> Void) {
+    public convenience init<Object: AnyObject>(object: Object, keyPath: String, options: NSKeyValueObservingOptions = [], block: @escaping (_ object: Object, _ change: Change, _ kvo: KVObserver) -> Void) {
         self.init(__object: object, keyPath: keyPath, options: options, block: { (object, change, kvo) in
-            block(object: unsafeDowncast(object), change: Change(rawDict: change), kvo: kvo)
+            block(unsafeDowncast(object as AnyObject, to: Object.self), Change(rawDict: change), kvo)
         })
     }
     
     /// Establishes a KVO relationship to `object`. The KVO will be active until either `object` or `observer`
     /// deallocates or until the `cancel()` method is invoked.
-    public convenience init<T: AnyObject, Object: AnyObject>(observer: T, object: Object, keyPath: String, options: NSKeyValueObservingOptions = [], block: (observer: T, object: Object, change: Change, kvo: KVObserver) -> Void) {
+    public convenience init<T: AnyObject, Object: AnyObject>(observer: T, object: Object, keyPath: String, options: NSKeyValueObservingOptions = [], block: @escaping (_ observer: T, _ object: Object, _ change: Change, _ kvo: KVObserver) -> Void) {
         self.init(__observer: observer, object: object, keyPath: keyPath, options: options, block: { (observer, object, change, kvo) in
-            block(observer: unsafeDowncast(observer), object: unsafeDowncast(object), change: Change(rawDict: change), kvo: kvo)
+            block(unsafeDowncast(observer as AnyObject, to: T.self), unsafeDowncast(object as AnyObject, to: Object.self), Change(rawDict: change), kvo)
         })
     }
     
@@ -38,37 +38,37 @@ extension KVObserver {
         /// The kind of the change.
         /// - seealso: `NSKeyValueChangeKindKey`
         public var kind: NSKeyValueChange? {
-            return (self.rawDict?[NSKeyValueChangeKindKey] as? UInt).flatMap(NSKeyValueChange.init)
+            return (self.rawDict?[.kindKey] as? UInt).flatMap(NSKeyValueChange.init)
         }
         
         /// The old value from the change.
         /// - seealso: `NSKeyValueChangeOldKey`
-        public var old: AnyObject? {
-            return self.rawDict?[NSKeyValueChangeOldKey]
+        public var old: Any? {
+            return self.rawDict?[.oldKey]
         }
         
         /// The new value from the change.
         /// - seealso: `NSKeyValueChangeNewKey`
-        public var new: AnyObject? {
-            return self.rawDict?[NSKeyValueChangeNewKey]
+        public var new: Any? {
+            return self.rawDict?[.newKey]
         }
         
         /// Whether this callback is being sent prior to the change.
         /// - seealso: `NSKeyValueChangeNotificationIsPriorKey`
         public var isPrior: Bool {
-            return self.rawDict?[NSKeyValueChangeNotificationIsPriorKey] as? Bool ?? false
+            return self.rawDict?[.notificationIsPriorKey] as? Bool ?? false
         }
         
         /// The indexes of the inserted, removed, or replaced objects when relevant.
         /// - seealso: `NSKeyValueChangeIndexesKey`
-        public var indexes: NSIndexSet? {
-            return self.rawDict?[NSKeyValueChangeIndexesKey] as? NSIndexSet
+        public var indexes: IndexSet? {
+            return self.rawDict?[.indexesKey] as? IndexSet
         }
         
         /// The raw change dictionary passed to `observeValueForKeyPath(_:ofObject:change:context:)`.
-        public let rawDict: [String: AnyObject]?
+        public let rawDict: [NSKeyValueChangeKey: Any]?
         
-        private init(rawDict: [String: AnyObject]?) {
+        fileprivate init(rawDict: [NSKeyValueChangeKey: Any]?) {
             self.rawDict = rawDict
         }
     }
@@ -81,6 +81,6 @@ extension KVObserver {
     ///
     /// - Note: This property does not support key-value observing.
     @nonobjc public var isCancelled: Bool {
-        return __cancelled
+        return __isCancelled
     }
 }
