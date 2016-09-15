@@ -1,6 +1,6 @@
 # PMKVObserver
 
-[![Version](https://img.shields.io/badge/version-v2.0.0-blue.svg)](https://github.com/postmates/PMKVObserver/releases/latest)
+[![Version](https://img.shields.io/badge/version-v2.0.1-blue.svg)](https://github.com/postmates/PMKVObserver/releases/latest)
 ![Platforms](https://img.shields.io/badge/platforms-ios%20%7C%20osx%20%7C%20watchos%20%7C%20tvos-lightgrey.svg)
 ![Languages](https://img.shields.io/badge/languages-swift%20%7C%20objc-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)
@@ -96,6 +96,10 @@ If you install by copying the source into your project, it should work on iOS 7 
 
 ## Installation
 
+After installing with any mechanism, you can use this by adding `import PMKVObserver` (Swift) or `@import PMKVObserver;` (Objective-C) to your code.
+
+### Carthage
+
 To install using [Carthage][], add the following to your Cartfile:
 
 ```
@@ -108,9 +112,25 @@ This version supports Swift 3.0. For Swift 2.3, use the following instead:
 github "postmates/PMKVObserver" "v1.0.5"
 ```
 
-You may also install manually by adding the framework to your workspace, or by adding the 3 files KVObserver.h, KVObserver.m, and (optionally) KVObserver.swift to your project.
+### CocoaPods
 
-Once installed, you can use this by adding `import PMKVObserver` (Swift) or `@import PMKVObserver;` (Objective-C) to your code.
+To install using [CocoaPods][], add the following to your Podfile:
+
+```
+pod 'PMKVObserver', '~> 2.0'
+```
+
+This release supports Swift 3. If you want Swift 2.3 support, you can use
+
+```
+pod 'PMKVObserver', '~> 1.0.5'
+```
+
+[CocoaPods]: https://cocoapods.org
+
+### Manual Installation
+
+You may also install manually by adding the framework to your workspace, or by adding the 3 files KVObserver.h, KVObserver.m, and (optionally) KVObserver.swift to your project.
 
 ## License
 
@@ -125,6 +145,10 @@ Licensed under either of
 Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you shall be dual licensed as above, without any additional terms or conditions.
 
 ## Version History
+
+#### v2.0.1 (2016-09-15)
+
+* Fix CocoaPods.
 
 #### v2.0.0 (2016-09-08)
 
