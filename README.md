@@ -11,7 +11,7 @@
 
 PMKVObserver provides a safe block-based wrapper around Key-Value Observing, with APIs for both Obj-C and Swift. Features include:
 
-* Thread-safety. Observers can be registered on a different thread than KVO notifications are sent on, and can be cancelled on yet another thread. An observer can even be cancelled from two thread simultaneously.
+* Thread-safety. Observers can be registered on a different thread than KVO notifications are sent on, and can be cancelled on yet another thread. An observer can even be cancelled from two threads simultaneously.
 * Automatic unregistering when the observed object deallocates.
 * Support for providing an observing object that is given to the block, and automatic unregistering when this observing object deallocates. This lets you call methods on `self` without retaining it or dealing with a weak reference.
 * Thread-safety for the automatic deallocation. This protects against receiving messages on another thread while the object is deallocating.
@@ -30,7 +30,7 @@ _ = KVObserver(object: user, keyPath: "fullName") { object, _, _ in
 
 // Convenience methods for working with the change dictionary
 _ = KVObserver(object: user, keyPath: "fullName", options: [.old, .new]) { _, change, _ in
-    // unfortunately we don't know what the type of fullName is, so change uses AnyObject
+    // unfortunately we don't know what the type of fullName is, so change uses Any
     let old = change.old as? String
     let new = change.new as? String
     if old != new {
@@ -66,14 +66,14 @@ Objective-C provides all the same functionality as Swift, albeit without the str
 ```objc
 // Observe an object for as long as the object is alive.
 [PMKVObserver observeObject:self.user keyPath:@"fullName" options:0
-                      block:^(id  _Nonnull object, NSDictionary<NSString *,id> * _Nullable change, PMKVObserver * _Nonnull kvo) {
+                      block:^(id  _Nonnull object, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change, PMKVObserver * _Nonnull kvo) {
     NSLog(@"User's full name changed to %@", [object fullName]);
 }];
 
 // Change dictionary is provided, but without the convenience methods.
 [PMKVObserver observeObject:self.user keyPath:@"fullName"
                     options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
-                      block:^(id  _Nonnull object, NSDictionary<NSString *,id> * _Nullable change, PMKVObserver * _Nonnull kvo) {
+                      block:^(id  _Nonnull object, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change, PMKVObserver * _Nonnull kvo) {
     NSString *old = change[NSKeyValueChangeOldKey];
     NSString *new = change[NSKeyValueChangeNewKey];
     if (old != new && (new == nil || ![old isEqualToString:new])) {
@@ -83,10 +83,6 @@ Objective-C provides all the same functionality as Swift, albeit without the str
 
 // Unregistering and observing object support is also provided (see Swift examples).
 ```
-
-## Caveats
-
-As this is a brand-new framework, it has not yet been battle-tested. The test suite covers the basic functionality, but it can't test for multi-threading race conditions. To be the best of my knowledge it is implemented correctly, but if you find any problems, please [file an issue](https://github.com/postmates/PMKVObserver/issues).
 
 ## Requirements
 
