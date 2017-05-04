@@ -23,13 +23,13 @@ PMKVObserver provides a safe block-based wrapper around Key-Value Observing, wit
 
 ```swift
 // Observe an object for as long as the object is alive.
-_ = KVObserver(object: user, keyPath: "fullName") { object, _, _ in
+_ = KVObserver(object: user, keyPath: #keyPath(user.fullName)) { object, _, _ in
     // `object` has the same type as `user`
     print("User's full name changed to \(object.fullName)")
 }
 
 // Convenience methods for working with the change dictionary
-_ = KVObserver(object: user, keyPath: "fullName", options: [.old, .new]) { _, change, _ in
+_ = KVObserver(object: user, keyPath: #keyPath(user.fullName), options: [.old, .new]) { _, change, _ in
     // unfortunately we don't know what the type of fullName is, so change uses Any
     let old = change.old as? String
     let new = change.new as? String
@@ -39,21 +39,21 @@ _ = KVObserver(object: user, keyPath: "fullName", options: [.old, .new]) { _, ch
 }
 
 // Unregistering can be done from within the block, even in an .initial callback
-_ = KVObserver(object: user, keyPath: "fullName", options: [.initial]) { object, _, kvo in
+_ = KVObserver(object: user, keyPath: #keyPath(user.fullName), options: [.initial]) { object, _, kvo in
     guard !object.fullName.isEmpty else { return }
     print("User's full name is \(object.fullName)")
     kvo.cancel()
 }
 
 // Or you can unregister externally
-let token = KVObserver(object: user, keyPath: "fullName") { object, _, _ in
+let token = KVObserver(object: user, keyPath: #keyPath(user.fullName)) { object, _, _ in
     print("User's full name changed to \(object.fullName)")
 }
 // ... sometime later ...
 token.cancel()
 
 // You can also pass an observing object and KVO will be unregistered when that object deallocates
-_ = KVObserver(observer: self, object: user, keyPath: "fullName") { observer, object, _, _ in
+_ = KVObserver(observer: self, object: user, keyPath: #keyPath(user.fullName)) { observer, object, _, _ in
     // `observer` has the same type as `self`
     observer.nameLabel.text = object.fullName
 }
