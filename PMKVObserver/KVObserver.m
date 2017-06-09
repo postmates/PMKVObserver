@@ -160,7 +160,7 @@ static void setup(PMKVObserver *self, id _Nullable NS_VALID_UNTIL_END_OF_SCOPE o
 
 - (void)teardown {
     int retval = pthread_mutex_lock(&_mutex);
-    NSAssert(__builtin_expect(retval, 0) == 0, @"pthread_mutex_lock: %s", strerror(retval));
+    NSAssert(retval == 0, @"pthread_mutex_lock: %s", strerror(retval));
     @try {
         if (_unsafeObject == nil) {
             // we must have already cleared it in a concurrent teardown
@@ -171,7 +171,7 @@ static void setup(PMKVObserver *self, id _Nullable NS_VALID_UNTIL_END_OF_SCOPE o
     }
     @finally {
         retval = pthread_mutex_unlock(&_mutex);
-        NSAssert(__builtin_expect(retval, 0) == 0, @"pthread_mutex_unlock: %s", strerror(retval));
+        NSAssert(retval == 0, @"pthread_mutex_unlock: %s", strerror(retval));
     }
     atomic_fetch_or_explicit(&_state, PMKVObserverStateDeregistered, memory_order_relaxed);
     // only one caller can ever make it to this point
@@ -201,7 +201,7 @@ static void setup(PMKVObserver *self, id _Nullable NS_VALID_UNTIL_END_OF_SCOPE o
             // callback was fully released and should be treated as nil
             return;
         }
-        NSAssert(__builtin_expect(count != UINT_FAST8_MAX, 0), @"callback activity count hit UINT_FAST8_MAX");
+        NSAssert(count != UINT_FAST8_MAX, @"callback activity count hit UINT_FAST8_MAX");
     } while (!atomic_compare_exchange_weak_explicit(&_activityCount, &count, count+1, memory_order_relaxed, memory_order_relaxed));
     // we've now "retained" it and it's safe to access
     id callback = _callback;
