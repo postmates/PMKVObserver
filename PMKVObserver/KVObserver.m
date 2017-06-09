@@ -99,10 +99,20 @@ static void setup(PMKVObserver *self, id _Nullable NS_VALID_UNTIL_END_OF_SCOPE o
     self->_keyPath = [keyPath copy];
     atomic_init(&self->_activityCount, 1);
     self->_callback = callback;
+    
     int retval;
-    while ((retval = pthread_mutex_init(&self->_mutex, NULL))) {
+    pthread_mutexattr_t attrs;
+    retval = pthread_mutexattr_init(&attrs);
+    NSCAssert(retval == 0, @"pthread_mutexattr_init: %s", strerror(retval));
+    (void)pthread_mutexattr_setpolicy_np(&attrs, _PTHREAD_MUTEX_POLICY_FIRSTFIT); // unfair lock
+    while ((retval = pthread_mutex_init(&self->_mutex, &attrs))) {
         NSCAssert(retval == EAGAIN, @"pthread_mutex_init: %s", strerror(retval));
     }
+    retval = pthread_mutexattr_destroy(&attrs);
+    if (__builtin_expect(retval, 0) != 0) {
+        NSLog(@"PMKVObserver: pthread_mutexattr_destroy: %s", strerror(retval));
+    }
+    
     atomic_init(&self->_state, PMKVObserverStateActive);
     [self installDeallocSpiesForObject:object observer:observer];
     [object addObserver:self forKeyPath:self->_keyPath options:options context:kContext];

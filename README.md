@@ -142,6 +142,10 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 
 ## Version History
 
+#### Development
+
+* Switch to an unfair lock in teardown.
+
 #### v2.0.1 (2016-09-15)
 
 * Fix CocoaPods.
