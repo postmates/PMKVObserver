@@ -144,7 +144,7 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 
 #### Development
 
-* Switch to an unfair lock in teardown.
+* Switch to an unfair lock in teardown. This uses `os_unfair_lock` on platforms that support it, otherwise it uses an unfair mutex.
 
 #### v2.0.1 (2016-09-15)
 

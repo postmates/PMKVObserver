@@ -16,6 +16,9 @@
 #import <stdatomic.h>
 #import <objc/runtime.h>
 #import <pthread.h>
+#import <pthread/pthread_spis.h>
+#import <os/lock.h>
+#import <TargetConditionals.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -41,6 +44,8 @@ typedef NS_ENUM(uint_fast8_t, PMKVObserverState) {
 typedef void (^Callback)(id object, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change, PMKVObserver *kvo);
 typedef void (^ObserverCallback)(id observer, id object, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change, PMKVObserver *kvo);
 
+static BOOL unfair_locks_available = NO;
+
 @implementation PMKVObserver {
     __weak id _Nullable _object;
     // if we cancel because the object started dealloc, our __weak ivar will be nil already, so we need a non-weak version
@@ -60,8 +65,47 @@ typedef void (^ObserverCallback)(id observer, id object, NSDictionary<NSKeyValue
     
     // we need to be able to block in -teardown until KVO is deregistered (both to preserve the guarantee of -cancel
     // and to ensure the KVO is deregistered before the object deallocates). Can't use a spinlock because it's unsafe
-    // on iOS, so we settle for a mutex.
-    pthread_mutex_t _mutex;
+    // on iOS, so we settle for a mutex or an os_unfair_lock.
+    union {
+        pthread_mutex_t mutex;
+        os_unfair_lock unfair;
+    } _lock;
+}
+
++ (void)initialize {
+    if (self == [PMKVObserver class]) {
+        // NB: We can't just check for the os_unfair_lock_lock symbol because it appears to be
+        // present on iOS 9.3 at least, even though it's declared as only being available on iOS
+        // 10.0+. Since it doesn't declare iOS 9 support, we probably shouldn't use it there.
+#ifndef __has_builtin
+#define __has_builtin(x) 0
+#endif
+#if __has_builtin(__builtin_available)
+        if (@available(macOS 10.12, iOS 10, tvOS 10, watchOS 3, *)) {
+            unfair_locks_available = YES;
+        } else {
+            unfair_locks_available = NO;
+        }
+#else
+        if ([NSProcessInfo instancesRespondToSelector:@selector(isOperatingSystemAtLeastVersion:)]) {
+            NSOperatingSystemVersion version;
+#if TARGET_OS_OSX
+            version = (NSOperatingSystemVersion){10, 12, 0};
+#elif TARGET_OS_IOS
+            version = (NSOperatingSystemVersion){10, 0, 0};
+#elif TARGET_OS_TV
+            version = (NSOperatingSystemVersion){10, 0, 0};
+#elif TARGET_OS_WATCH
+            version = (NSOperatingSystemVersion){3, 0, 0};
+#else
+#error Unknown platform.
+#endif
+            unfair_locks_available = [NSProcessInfo.processInfo isOperatingSystemAtLeastVersion:version];
+        } else {
+            unfair_locks_available = NO;
+        }
+#endif
+    }
 }
 
 + (instancetype)observeObject:(id)object keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options block:(Callback)block {
@@ -100,17 +144,22 @@ static void setup(PMKVObserver *self, id _Nullable NS_VALID_UNTIL_END_OF_SCOPE o
     atomic_init(&self->_activityCount, 1);
     self->_callback = callback;
     
-    int retval;
-    pthread_mutexattr_t attrs;
-    retval = pthread_mutexattr_init(&attrs);
-    NSCAssert(retval == 0, @"pthread_mutexattr_init: %s", strerror(retval));
-    (void)pthread_mutexattr_setpolicy_np(&attrs, _PTHREAD_MUTEX_POLICY_FIRSTFIT); // unfair lock
-    while ((retval = pthread_mutex_init(&self->_mutex, &attrs))) {
-        NSCAssert(retval == EAGAIN, @"pthread_mutex_init: %s", strerror(retval));
-    }
-    retval = pthread_mutexattr_destroy(&attrs);
-    if (__builtin_expect(retval, 0) != 0) {
-        NSLog(@"PMKVObserver: pthread_mutexattr_destroy: %s", strerror(retval));
+    if (unfair_locks_available) {
+        self->_lock.unfair = OS_UNFAIR_LOCK_INIT;
+        atomic_thread_fence(memory_order_release);
+    } else {
+        int retval;
+        pthread_mutexattr_t attrs;
+        retval = pthread_mutexattr_init(&attrs);
+        NSCAssert(retval == 0, @"pthread_mutexattr_init: %s", strerror(retval));
+        (void)pthread_mutexattr_setpolicy_np(&attrs, _PTHREAD_MUTEX_POLICY_FIRSTFIT); // unfair lock
+        while ((retval = pthread_mutex_init(&self->_lock.mutex, &attrs))) {
+            NSCAssert(retval == EAGAIN, @"pthread_mutex_init: %s", strerror(retval));
+        }
+        retval = pthread_mutexattr_destroy(&attrs);
+        if (__builtin_expect(retval, 0) != 0) {
+            NSLog(@"PMKVObserver: pthread_mutexattr_destroy: %s", strerror(retval));
+        }
     }
     
     atomic_init(&self->_state, PMKVObserverStateActive);
@@ -127,9 +176,11 @@ static void setup(PMKVObserver *self, id _Nullable NS_VALID_UNTIL_END_OF_SCOPE o
 }
 
 - (void)dealloc {
-    int retval = pthread_mutex_destroy(&_mutex);
-    if (__builtin_expect(retval, 0) != 0) {
-        NSLog(@"PMKVObserver: pthread_mutex_destroy: %s", strerror(retval));
+    if (!unfair_locks_available) {
+        int retval = pthread_mutex_destroy(&_lock.mutex);
+        if (__builtin_expect(retval, 0) != 0) {
+            NSLog(@"PMKVObserver: pthread_mutex_destroy: %s", strerror(retval));
+        }
     }
 }
 
@@ -159,8 +210,13 @@ static void setup(PMKVObserver *self, id _Nullable NS_VALID_UNTIL_END_OF_SCOPE o
 }
 
 - (void)teardown {
-    int retval = pthread_mutex_lock(&_mutex);
-    NSAssert(retval == 0, @"pthread_mutex_lock: %s", strerror(retval));
+    if (unfair_locks_available) {
+        os_unfair_lock_lock(&_lock.unfair);
+    } else {
+        int retval = pthread_mutex_lock(&_lock.mutex);
+#pragma unused(retval)
+        NSAssert(retval == 0, @"pthread_mutex_lock: %s", strerror(retval));
+    }
     @try {
         if (_unsafeObject == nil) {
             // we must have already cleared it in a concurrent teardown
@@ -170,8 +226,13 @@ static void setup(PMKVObserver *self, id _Nullable NS_VALID_UNTIL_END_OF_SCOPE o
         _unsafeObject = nil;
     }
     @finally {
-        retval = pthread_mutex_unlock(&_mutex);
-        NSAssert(retval == 0, @"pthread_mutex_unlock: %s", strerror(retval));
+        if (unfair_locks_available) {
+            os_unfair_lock_unlock(&_lock.unfair);
+        } else {
+            int retval = pthread_mutex_unlock(&_lock.mutex);
+#pragma unused(retval)
+            NSAssert(retval == 0, @"pthread_mutex_unlock: %s", strerror(retval));
+        }
     }
     atomic_fetch_or_explicit(&_state, PMKVObserverStateDeregistered, memory_order_relaxed);
     // only one caller can ever make it to this point
