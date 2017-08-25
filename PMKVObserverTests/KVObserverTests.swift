@@ -37,6 +37,8 @@ class KVObserverTests: XCTestCase {
             XCTAssertEqual(change.kind, .setting)
             XCTAssert(kvo === token)
             XCTAssertEqual(object.str, "foo")
+            XCTAssertNil(change.old)
+            XCTAssertNil(change.new)
         }
         helper.str = "foo"
         XCTAssertTrue(fired)
@@ -60,6 +62,63 @@ class KVObserverTests: XCTestCase {
         token.cancel()
         helper.str = "bar"
         XCTAssertFalse(fired)
+        fired = false
+        
+        token = KVObserver(object: helper, keyPath: #keyPath(KVOHelper.str), options: [.old, .new], block: { (object, change, kvo) in
+            fired = true
+            XCTAssertEqual(change.old as? String, "bar")
+            XCTAssertEqual(change.new as? String, "foo")
+        })
+        helper.str = "foo"
+        XCTAssertTrue(fired)
+        token.cancel()
+        fired = false
+    }
+    
+    func testSwift4KVO() {
+        var fired = false
+        var token: KVObserver!
+        token = KVObserver(object: helper, keyPath: \KVOHelper.str) { [weak helper] object, change, kvo in
+            fired = true
+            XCTAssert(object === helper)
+            XCTAssertEqual(change.kind, .setting)
+            XCTAssert(kvo === token)
+            XCTAssertEqual(object.str, "foo")
+            XCTAssertNil(change.old)
+            XCTAssertNil(change.new)
+        }
+        helper.str = "foo"
+        XCTAssertTrue(fired)
+        fired = false
+        token.cancel()
+        helper.str = "bar"
+        XCTAssertFalse(fired)
+        fired = false
+        
+        let foo = NSObject()
+        token = KVObserver(observer: foo, object: helper, keyPath: \KVOHelper.str) { [weak foo] observer, object, _, _ in
+            fired = true
+            XCTAssert(observer === foo)
+            XCTAssertEqual(object.str, "foo")
+        }
+        XCTAssertFalse(fired)
+        fired = false
+        helper.str = "foo"
+        XCTAssertTrue(fired)
+        fired = false
+        token.cancel()
+        helper.str = "bar"
+        XCTAssertFalse(fired)
+        
+        token = KVObserver(object: helper, keyPath: \KVOHelper.str, options: [.old, .new], block: { (object, change, kvo) in
+            fired = true
+            XCTAssertEqual(change.old, "bar")
+            XCTAssertEqual(change.new, "foo")
+        })
+        helper.str = "foo"
+        XCTAssertTrue(fired)
+        token.cancel()
+        fired = false
     }
     
     func testInitialCancel() {

@@ -19,7 +19,25 @@ public typealias KVObserver = PMKVObserver
 extension KVObserver {
     /// Establishes a KVO relationship to `object`. The KVO will be active until `object` deallocates or
     /// until the `cancel()` method is invoked.
-    public convenience init<Object: AnyObject>(object: Object, keyPath: String, options: NSKeyValueObservingOptions = [], block: @escaping (_ object: Object, _ change: Change, _ kvo: KVObserver) -> Void) {
+    public convenience init<Object: AnyObject, Value>(object: Object, keyPath: KeyPath<Object,Value>, options: NSKeyValueObservingOptions = [], block: @escaping (_ object: Object, _ change: Change<Value>, _ kvo: KVObserver) -> Void) {
+        // FIXME: (SR-5220) We shouldn't need to use the _kvcKeyPathString SPI
+        self.init(__object: object, keyPath: keyPath._kvcKeyPathString ?? "", options: options, block: { (object, change, kvo) in
+            block(unsafeDowncast(object as AnyObject, to: Object.self), Change(rawDict: change), kvo)
+        })
+    }
+    
+    /// Establishes a KVO relationship to `object`. The KVO will be active until either `object` or `observer`
+    /// deallocates or until the `cancel()` method is invoked.
+    public convenience init<T: AnyObject, Object: AnyObject, Value>(observer: T, object: Object, keyPath: KeyPath<Object,Value>, options: NSKeyValueObservingOptions = [], block: @escaping (_ observer: T, _ object: Object, _ change: Change<Value>, _ kvo: KVObserver) -> Void) {
+        // FIXME: (SR-5220) We shouldn't need to use the _kvcKeyPathString SPI
+        self.init(__observer: observer, object: object, keyPath: keyPath._kvcKeyPathString ?? "", options: options, block: { (observer, object, change, kvo) in
+            block(unsafeDowncast(observer as AnyObject, to: T.self), unsafeDowncast(object as AnyObject, to: Object.self), Change(rawDict: change), kvo)
+        })
+    }
+    
+    /// Establishes a KVO relationship to `object`. The KVO will be active until `object` deallocates or
+    /// until the `cancel()` method is invoked.
+    public convenience init<Object: AnyObject>(object: Object, keyPath: String, options: NSKeyValueObservingOptions = [], block: @escaping (_ object: Object, _ change: Change<Any>, _ kvo: KVObserver) -> Void) {
         self.init(__object: object, keyPath: keyPath, options: options, block: { (object, change, kvo) in
             block(unsafeDowncast(object as AnyObject, to: Object.self), Change(rawDict: change), kvo)
         })
@@ -27,14 +45,14 @@ extension KVObserver {
     
     /// Establishes a KVO relationship to `object`. The KVO will be active until either `object` or `observer`
     /// deallocates or until the `cancel()` method is invoked.
-    public convenience init<T: AnyObject, Object: AnyObject>(observer: T, object: Object, keyPath: String, options: NSKeyValueObservingOptions = [], block: @escaping (_ observer: T, _ object: Object, _ change: Change, _ kvo: KVObserver) -> Void) {
+    public convenience init<T: AnyObject, Object: AnyObject>(observer: T, object: Object, keyPath: String, options: NSKeyValueObservingOptions = [], block: @escaping (_ observer: T, _ object: Object, _ change: Change<Any>, _ kvo: KVObserver) -> Void) {
         self.init(__observer: observer, object: object, keyPath: keyPath, options: options, block: { (observer, object, change, kvo) in
             block(unsafeDowncast(observer as AnyObject, to: T.self), unsafeDowncast(object as AnyObject, to: Object.self), Change(rawDict: change), kvo)
         })
     }
     
     /// A type that provides type-checked accessors for the defined change keys.
-    public struct Change {
+    public struct Change<Value> {
         /// The kind of the change.
         /// - seealso: `NSKeyValueChangeKey.kindKey`
         public var kind: NSKeyValueChange {
@@ -44,14 +62,14 @@ extension KVObserver {
         
         /// The old value from the change.
         /// - seealso: `NSKeyValueChangeKey.oldKey`
-        public var old: Any? {
-            return rawDict[.oldKey]
+        public var old: Value? {
+            return rawDict[.oldKey] as? Value
         }
         
         /// The new value from the change.
         /// - seealso: `NSKeyValueChangeKey.newKey`
-        public var new: Any? {
-            return rawDict[.newKey]
+        public var new: Value? {
+            return rawDict[.newKey] as? Value
         }
         
         /// Whether this callback is being sent prior to the change.
