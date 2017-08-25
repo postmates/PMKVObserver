@@ -15,20 +15,20 @@
 import Foundation
 
 public final class KVOHelper: NSObject {
-    public dynamic var str: String = ""
-    public dynamic var optStr: String?
+    @objc public dynamic var str: String = ""
+    @objc public dynamic var optStr: String?
     
-    public dynamic var int: Int = 0
-    public dynamic var bool: Bool = false
+    @objc public dynamic var int: Int = 0
+    @objc public dynamic var bool: Bool = false
     
-    public dynamic var num: NSNumber = 0
-    public dynamic var optNum: NSNumber?
+    @objc public dynamic var num: NSNumber = 0
+    @objc public dynamic var optNum: NSNumber?
     
-    public dynamic var ary: [String] = []
-    public dynamic var optAry: [String]?
+    @objc public dynamic var ary: [String] = []
+    @objc public dynamic var optAry: [String]?
     
-    public dynamic var firstName: String?
-    public dynamic var lastName: String?
+    @objc public dynamic var firstName: String?
+    @objc public dynamic var lastName: String?
     @objc public  var computed: String? {
         switch (firstName, lastName) {
         case let (a?, b?): return "\(a) \(b)"
