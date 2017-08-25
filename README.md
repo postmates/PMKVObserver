@@ -142,6 +142,12 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 
 ## Version History
 
+#### Development
+
+* Convert to Swift 4.
+* Add new initializers that use Swift 4 `KeyPath`s.
+* Make `Change.rawDict` and `Change.kind` non-optional.
+
 #### v2.0.2 (2017-07-25)
 
 * Switch to an unfair lock in teardown. This uses `os_unfair_lock` on platforms that support it, otherwise it uses an unfair mutex.
