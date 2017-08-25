@@ -41,8 +41,8 @@ typedef NS_ENUM(uint_fast8_t, PMKVObserverState) {
     PMKVObserverStateDeregistered = 1 << 2
 };
 
-typedef void (^Callback)(id object, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change, PMKVObserver *kvo);
-typedef void (^ObserverCallback)(id observer, id object, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change, PMKVObserver *kvo);
+typedef void (^Callback)(id object, NSDictionary<NSKeyValueChangeKey,id> *change, PMKVObserver *kvo);
+typedef void (^ObserverCallback)(id observer, id object, NSDictionary<NSKeyValueChangeKey,id> *change, PMKVObserver *kvo);
 
 static BOOL unfair_locks_available = NO;
 
@@ -247,7 +247,7 @@ static void setup(PMKVObserver *self, id _Nullable NS_VALID_UNTIL_END_OF_SCOPE o
     if (context != kContext) {
         return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
-    if (keyPath == nil || object == nil) {
+    if (keyPath == nil || object == nil || change == nil) {
         // I don't know how this is even possible, but the declaration has them as nullable. Bail out if this happens.
         return;
     }

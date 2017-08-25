@@ -50,19 +50,19 @@ __attribute__((objc_subclassing_restricted))
 @interface PMKVObserver : NSObject
 /// Establishes a KVO relationship to <tt>object</tt>. The KVO will be active until \c object deallocates or
 /// until the \c cancel() method is invoked.
-+ (instancetype)observeObject:(id)object keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options block:(void (^)(id object, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change, PMKVObserver *kvo))block NS_SWIFT_UNAVAILABLE("use init(object:keyPath:options:block:)");
++ (instancetype)observeObject:(id)object keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options block:(void (^)(id object, NSDictionary<NSKeyValueChangeKey,id> *change, PMKVObserver *kvo))block NS_SWIFT_UNAVAILABLE("use init(object:keyPath:options:block:)");
 
 /// Establishes a KVO relationship to <tt>object</tt>. The KVO will be active until either \c object or
 /// \c observer deallocates or until the \c cancel() method is invoked.
-+ (instancetype)observeObject:(id)object observer:(id)observer keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options block:(void (^)(id observer, id object, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change, PMKVObserver *kvo))block NS_SWIFT_UNAVAILABLE("use init(observer:object:keyPath:options:block:)");
++ (instancetype)observeObject:(id)object observer:(id)observer keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options block:(void (^)(id observer, id object, NSDictionary<NSKeyValueChangeKey,id> *change, PMKVObserver *kvo))block NS_SWIFT_UNAVAILABLE("use init(observer:object:keyPath:options:block:)");
 
 /// Establishes a KVO relationship to <tt>object</tt>. The KVO will be active until \c object deallocates or
 /// until the \c cancel() method is invoked.
-- (instancetype)initWithObject:(id)object keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options block:(void (^)(id object, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change, PMKVObserver *kvo))block NS_DESIGNATED_INITIALIZER NS_REFINED_FOR_SWIFT;
+- (instancetype)initWithObject:(id)object keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options block:(void (^)(id object, NSDictionary<NSKeyValueChangeKey,id> *change, PMKVObserver *kvo))block NS_DESIGNATED_INITIALIZER NS_REFINED_FOR_SWIFT;
 
 /// Establishes a KVO relationship to <tt>object</tt>. The KVO will be active until either \c object or
 /// \c observer deallocates or until the \c cancel() method is invoked.
-- (instancetype)initWithObserver:(id)observer object:(id)object keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options block:(void (^)(id observer, id object, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change, PMKVObserver *kvo))block NS_DESIGNATED_INITIALIZER NS_REFINED_FOR_SWIFT;
+- (instancetype)initWithObserver:(id)observer object:(id)object keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options block:(void (^)(id observer, id object, NSDictionary<NSKeyValueChangeKey,id> *change, PMKVObserver *kvo))block NS_DESIGNATED_INITIALIZER NS_REFINED_FOR_SWIFT;
 
 - (instancetype)init NS_UNAVAILABLE;
 

@@ -36,39 +36,40 @@ extension KVObserver {
     /// A type that provides type-checked accessors for the defined change keys.
     public struct Change {
         /// The kind of the change.
-        /// - seealso: `NSKeyValueChangeKindKey`
-        public var kind: NSKeyValueChange? {
-            return (self.rawDict?[.kindKey] as? UInt).flatMap(NSKeyValueChange.init)
+        /// - seealso: `NSKeyValueChangeKey.kindKey`
+        public var kind: NSKeyValueChange {
+            // NB: Block-based KVO force-unwraps this, so we'll assume that it's safe to do the same.
+            return NSKeyValueChange(rawValue: rawDict[.kindKey] as! UInt)!
         }
         
         /// The old value from the change.
-        /// - seealso: `NSKeyValueChangeOldKey`
+        /// - seealso: `NSKeyValueChangeKey.oldKey`
         public var old: Any? {
-            return self.rawDict?[.oldKey]
+            return rawDict[.oldKey]
         }
         
         /// The new value from the change.
-        /// - seealso: `NSKeyValueChangeNewKey`
+        /// - seealso: `NSKeyValueChangeKey.newKey`
         public var new: Any? {
-            return self.rawDict?[.newKey]
+            return rawDict[.newKey]
         }
         
         /// Whether this callback is being sent prior to the change.
-        /// - seealso: `NSKeyValueChangeNotificationIsPriorKey`
+        /// - seealso: `NSKeyValueChangeKey.notificationIsPriorKey`
         public var isPrior: Bool {
-            return self.rawDict?[.notificationIsPriorKey] as? Bool ?? false
+            return self.rawDict[.notificationIsPriorKey] as? Bool ?? false
         }
         
         /// The indexes of the inserted, removed, or replaced objects when relevant.
-        /// - seealso: `NSKeyValueChangeIndexesKey`
+        /// - seealso: `NSKeyValueChangeKey.indexesKey`
         public var indexes: IndexSet? {
-            return self.rawDict?[.indexesKey] as? IndexSet
+            return self.rawDict[.indexesKey] as? IndexSet
         }
         
         /// The raw change dictionary passed to `observeValueForKeyPath(_:ofObject:change:context:)`.
-        public let rawDict: [NSKeyValueChangeKey: Any]?
+        public let rawDict: [NSKeyValueChangeKey: Any]
         
-        fileprivate init(rawDict: [NSKeyValueChangeKey: Any]?) {
+        fileprivate init(rawDict: [NSKeyValueChangeKey: Any]) {
             self.rawDict = rawDict
         }
     }
