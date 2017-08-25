@@ -31,7 +31,7 @@ class KVObserverTests: XCTestCase {
     func testKVO() {
         var fired = false
         var token: KVObserver!
-        token = KVObserver(object: helper, keyPath: "str") { [weak helper] object, change, kvo in
+        token = KVObserver(object: helper, keyPath: #keyPath(KVOHelper.str)) { [weak helper] object, change, kvo in
             fired = true
             XCTAssert(object === helper)
             XCTAssertEqual(change.kind, .setting)
@@ -47,7 +47,7 @@ class KVObserverTests: XCTestCase {
         fired = false
         
         let foo = NSObject()
-        token = KVObserver(observer: foo, object: helper, keyPath: "str") { [weak foo] observer, object, _, _ in
+        token = KVObserver(observer: foo, object: helper, keyPath: #keyPath(KVOHelper.str)) { [weak foo] observer, object, _, _ in
             fired = true
             XCTAssert(observer === foo)
             XCTAssertEqual(object.str, "foo")
@@ -67,7 +67,7 @@ class KVObserverTests: XCTestCase {
         weak var weakToken: KVObserver!
         helper.str = "foo"
         autoreleasepool {
-            let token = KVObserver(object: helper, keyPath: "str", options: .initial) { object, _, kvo in
+            let token = KVObserver(object: helper, keyPath: #keyPath(KVOHelper.str), options: .initial) { object, _, kvo in
                 fired = true
                 XCTAssertEqual(object.str, "foo")
                 kvo.cancel()
@@ -82,7 +82,7 @@ class KVObserverTests: XCTestCase {
         XCTAssertNil(weakToken)
         
         autoreleasepool {
-            let token = KVObserver(observer: self, object: helper, keyPath: "str", options: .initial) { _, object, _, kvo in
+            let token = KVObserver(observer: self, object: helper, keyPath: #keyPath(KVOHelper.str), options: .initial) { _, object, _, kvo in
                 fired = true
                 XCTAssertEqual(object.str, "bar")
                 kvo.cancel()
@@ -99,7 +99,7 @@ class KVObserverTests: XCTestCase {
     
     func testSameObserverObject() {
         var fired = false
-        let token = KVObserver(observer: helper, object: helper, keyPath: "str") { [weak helper] observer, object, _, _ in
+        let token = KVObserver(observer: helper, object: helper, keyPath: #keyPath(KVOHelper.str)) { [weak helper] observer, object, _, _ in
             fired = true
             XCTAssert(observer === helper)
             XCTAssert(object === helper)
