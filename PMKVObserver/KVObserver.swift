@@ -21,7 +21,10 @@ extension KVObserver {
     /// until the `cancel()` method is invoked.
     public convenience init<Object: AnyObject, Value>(object: Object, keyPath: KeyPath<Object,Value>, options: NSKeyValueObservingOptions = [], block: @escaping (_ object: Object, _ change: Change<Value>, _ kvo: KVObserver) -> Void) {
         // FIXME: (SR-5220) We shouldn't need to use the _kvcKeyPathString SPI
-        self.init(__object: object, keyPath: keyPath._kvcKeyPathString ?? "", options: options, block: { (object, change, kvo) in
+        guard let keyPathStr = keyPath._kvcKeyPathString else {
+            fatalError("Could not extract a String from KeyPath \(keyPath)")
+        }
+        self.init(__object: object, keyPath: keyPathStr, options: options, block: { (object, change, kvo) in
             block(unsafeDowncast(object as AnyObject, to: Object.self), Change(rawDict: change), kvo)
         })
     }
@@ -30,7 +33,10 @@ extension KVObserver {
     /// deallocates or until the `cancel()` method is invoked.
     public convenience init<T: AnyObject, Object: AnyObject, Value>(observer: T, object: Object, keyPath: KeyPath<Object,Value>, options: NSKeyValueObservingOptions = [], block: @escaping (_ observer: T, _ object: Object, _ change: Change<Value>, _ kvo: KVObserver) -> Void) {
         // FIXME: (SR-5220) We shouldn't need to use the _kvcKeyPathString SPI
-        self.init(__observer: observer, object: object, keyPath: keyPath._kvcKeyPathString ?? "", options: options, block: { (observer, object, change, kvo) in
+        guard let keyPathStr = keyPath._kvcKeyPathString else {
+            fatalError("Could not extract a String from KeyPath \(keyPath)")
+        }
+        self.init(__observer: observer, object: object, keyPath: keyPathStr, options: options, block: { (observer, object, change, kvo) in
             block(unsafeDowncast(observer as AnyObject, to: T.self), unsafeDowncast(object as AnyObject, to: Object.self), Change(rawDict: change), kvo)
         })
     }
