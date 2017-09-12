@@ -1,6 +1,6 @@
 # PMKVObserver
 
-[![Version](https://img.shields.io/badge/version-v2.0.2-blue.svg)](https://github.com/postmates/PMKVObserver/releases/latest)
+[![Version](https://img.shields.io/badge/version-v3.0.0-blue.svg)](https://github.com/postmates/PMKVObserver/releases/latest)
 ![Platforms](https://img.shields.io/badge/platforms-ios%20%7C%20osx%20%7C%20watchos%20%7C%20tvos-lightgrey.svg)
 ![Languages](https://img.shields.io/badge/languages-swift%20%7C%20objc-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)
@@ -23,13 +23,13 @@ PMKVObserver provides a safe block-based wrapper around Key-Value Observing, wit
 
 ```swift
 // Observe an object for as long as the object is alive.
-_ = KVObserver(object: user, keyPath: #keyPath(user.fullName)) { object, _, _ in
+_ = KVObserver(object: user, keyPath: \User.fullName) { object, _, _ in
     // `object` has the same type as `user`
     print("User's full name changed to \(object.fullName)")
 }
 
 // Convenience methods for working with the change dictionary
-_ = KVObserver(object: user, keyPath: #keyPath(user.fullName), options: [.old, .new]) { _, change, _ in
+_ = KVObserver(object: user, keyPath: \User.fullName, options: [.old, .new]) { _, change, _ in
     // unfortunately we don't know what the type of fullName is, so change uses Any
     let old = change.old as? String
     let new = change.new as? String
@@ -39,21 +39,21 @@ _ = KVObserver(object: user, keyPath: #keyPath(user.fullName), options: [.old, .
 }
 
 // Unregistering can be done from within the block, even in an .initial callback
-_ = KVObserver(object: user, keyPath: #keyPath(user.fullName), options: [.initial]) { object, _, kvo in
+_ = KVObserver(object: user, keyPath: \User.fullName, options: [.initial]) { object, _, kvo in
     guard !object.fullName.isEmpty else { return }
     print("User's full name is \(object.fullName)")
     kvo.cancel()
 }
 
 // Or you can unregister externally
-let token = KVObserver(object: user, keyPath: #keyPath(user.fullName)) { object, _, _ in
+let token = KVObserver(object: user, keyPath: \User.fullName) { object, _, _ in
     print("User's full name changed to \(object.fullName)")
 }
 // ... sometime later ...
 token.cancel()
 
 // You can also pass an observing object and KVO will be unregistered when that object deallocates
-_ = KVObserver(observer: self, object: user, keyPath: #keyPath(user.fullName)) { observer, object, _, _ in
+_ = KVObserver(observer: self, object: user, keyPath: \User.fullName) { observer, object, _, _ in
     // `observer` has the same type as `self`
     observer.nameLabel.text = object.fullName
 }
@@ -99,13 +99,13 @@ After installing with any mechanism, you can use this by adding `import PMKVObse
 To install using [Carthage][], add the following to your Cartfile:
 
 ```
+github "postmates/PMKVObserver" ~> 3.0
+```
+
+This version supports Swift 4.0. For Swift 3, use the following instead:
+
+```
 github "postmates/PMKVObserver" ~> 2.0
-```
-
-This version supports Swift 3.0. For Swift 2.3, use the following instead:
-
-```
-github "postmates/PMKVObserver" "v1.0.5"
 ```
 
 ### CocoaPods
@@ -113,13 +113,13 @@ github "postmates/PMKVObserver" "v1.0.5"
 To install using [CocoaPods][], add the following to your Podfile:
 
 ```
+pod 'PMKVObserver', '~> 3.0'
+```
+
+This release supports Swift 4. If you want Swift 3 support, you can use
+
+```
 pod 'PMKVObserver', '~> 2.0'
-```
-
-This release supports Swift 3. If you want Swift 2.3 support, you can use
-
-```
-pod 'PMKVObserver', '~> 1.0.5'
 ```
 
 [CocoaPods]: https://cocoapods.org
@@ -142,7 +142,7 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 
 ## Version History
 
-#### Development
+#### v3.0.0 (2017-09-12)
 
 * Convert to Swift 4.
 * Add new initializers that use Swift 4 `KeyPath`s.
