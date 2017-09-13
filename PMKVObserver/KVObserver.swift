@@ -17,6 +17,7 @@ import Foundation
 public typealias KVObserver = PMKVObserver
 
 extension KVObserver {
+    #if swift(>=3.2)
     /// Establishes a KVO relationship to `object`. The KVO will be active until `object` deallocates or
     /// until the `cancel()` method is invoked.
     public convenience init<Object: AnyObject, Value>(object: Object, keyPath: KeyPath<Object,Value>, options: NSKeyValueObservingOptions = [], block: @escaping (_ object: Object, _ change: Change<Value>, _ kvo: KVObserver) -> Void) {
@@ -40,6 +41,7 @@ extension KVObserver {
             block(unsafeDowncast(observer as AnyObject, to: T.self), unsafeDowncast(object as AnyObject, to: Object.self), Change(rawDict: change), kvo)
         })
     }
+    #endif
     
     /// Establishes a KVO relationship to `object`. The KVO will be active until `object` deallocates or
     /// until the `cancel()` method is invoked.

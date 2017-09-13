@@ -75,6 +75,7 @@ class KVObserverTests: XCTestCase {
         fired = false
     }
     
+    #if swift(>=3.2)
     func testSwift4KVO() {
         var fired = false
         var token: KVObserver!
@@ -120,6 +121,7 @@ class KVObserverTests: XCTestCase {
         token.cancel()
         fired = false
     }
+    #endif
     
     func testInitialCancel() {
         var fired = false

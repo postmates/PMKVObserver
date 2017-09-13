@@ -90,6 +90,8 @@ Installing as a framework requires a minimum of iOS 8, OS X 10.9, watchOS 2.0, o
 
 If you install by copying the source into your project, it should work on iOS 7 or later (iOS 6 if you remove KVObserver.swift), and OS X 10.7 or later. Please note that it has not been tested on these versions.
 
+PMKVObserver will compile with Xcode 8.3, but the new `KeyPath` APIs require Xcode 9 or later.
+
 ## Installation
 
 After installing with any mechanism, you can use this by adding `import PMKVObserver` (Swift) or `@import PMKVObserver;` (Objective-C) to your code.
@@ -102,24 +104,12 @@ To install using [Carthage][], add the following to your Cartfile:
 github "postmates/PMKVObserver" ~> 3.0
 ```
 
-This version supports Swift 4.0. For Swift 3, use the following instead:
-
-```
-github "postmates/PMKVObserver" ~> 2.0
-```
-
 ### CocoaPods
 
 To install using [CocoaPods][], add the following to your Podfile:
 
 ```
 pod 'PMKVObserver', '~> 3.0'
-```
-
-This release supports Swift 4. If you want Swift 3 support, you can use
-
-```
-pod 'PMKVObserver', '~> 2.0'
 ```
 
 [CocoaPods]: https://cocoapods.org
@@ -141,6 +131,10 @@ Licensed under either of
 Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you shall be dual licensed as above, without any additional terms or conditions.
 
 ## Version History
+
+#### Development
+
+* Set Swift version back to Swift 3.2. The new `KeyPath` stuff is usable from 3.2 so there's no reason to require 4. PMVKObserver will still compile with Swift 3.1, but the `KeyPath` APIs won't be available unless compiling with Swift 3.2.
 
 #### v3.0.0 (2017-09-12)
 
