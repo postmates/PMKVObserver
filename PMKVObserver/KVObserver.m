@@ -20,6 +20,8 @@
 #import <os/lock.h>
 #import <TargetConditionals.h>
 
+#pragma clang diagnostic ignored "-Wunguarded-availability"
+
 NS_ASSUME_NONNULL_BEGIN
 
 static void *kContext = &kContext;
