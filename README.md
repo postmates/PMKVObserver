@@ -1,6 +1,6 @@
 # PMKVObserver
 
-[![Version](https://img.shields.io/badge/version-v3.0.1-blue.svg)](https://github.com/postmates/PMKVObserver/releases/latest)
+[![Version](https://img.shields.io/badge/version-v3.0.2-blue.svg)](https://github.com/postmates/PMKVObserver/releases/latest)
 ![Platforms](https://img.shields.io/badge/platforms-ios%20%7C%20osx%20%7C%20watchos%20%7C%20tvos-lightgrey.svg)
 ![Languages](https://img.shields.io/badge/languages-swift%20%7C%20objc-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)
@@ -131,6 +131,10 @@ Licensed under either of
 Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you shall be dual licensed as above, without any additional terms or conditions.
 
 ## Version History
+
+#### v3.0.2 (2018-05-22)
+
+* Squelch some warnings when buliding with CocoaPods.
 
 #### v3.0.1 (2017-09-13)
 
