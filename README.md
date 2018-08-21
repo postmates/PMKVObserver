@@ -134,7 +134,7 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 
 #### v3.0.2 (2018-05-22)
 
-* Squelch some warnings when buliding with CocoaPods.
+* Squelch some warnings when building with CocoaPods.
 
 #### v3.0.1 (2017-09-13)
 
