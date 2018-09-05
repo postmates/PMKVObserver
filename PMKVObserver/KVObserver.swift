@@ -113,3 +113,21 @@ extension KVObserver {
         return __isCancelled
     }
 }
+
+extension KVObserver.Change where Value: RawRepresentable {
+    // Override old and new to do RawRepresentable conversions
+    
+    /// The old value from the change.
+    /// - seealso: `NSKeyValueChangeKey.oldKey`
+    public var old: Value? {
+        guard let value = rawDict[.oldKey] else { return nil }
+        return (value as? Value.RawValue).flatMap(Value.init(rawValue:))
+    }
+    
+    /// The new value from the change.
+    /// - seealso: `NSKeyValueChangeKey.newKey`
+    public var new: Value? {
+        guard let value = rawDict[.newKey] else { return nil }
+        return (value as? Value.RawValue).flatMap(Value.init(rawValue:))
+    }
+}

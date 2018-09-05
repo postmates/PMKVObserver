@@ -38,4 +38,10 @@ public final class KVOHelper: NSObject {
         }
     }
     @objc public  static let keyPathsForValuesAffectingComputed: Set<String> = ["firstName", "lastName"]
+    
+    @objc(KVOHelperEnum) public enum Enum: Int {
+        case zero, one, two
+    }
+    
+    @objc public dynamic var enumValue: Enum = .zero
 }
