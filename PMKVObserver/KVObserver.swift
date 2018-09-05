@@ -71,13 +71,15 @@ extension KVObserver {
         /// The old value from the change.
         /// - seealso: `NSKeyValueChangeKey.oldKey`
         public var old: Value? {
-            return rawDict[.oldKey] as? Value
+            guard let value = rawDict[.oldKey] else { return nil }
+            return value as? Value
         }
         
         /// The new value from the change.
         /// - seealso: `NSKeyValueChangeKey.newKey`
         public var new: Value? {
-            return rawDict[.newKey] as? Value
+            guard let value = rawDict[.newKey] else { return nil }
+            return value as? Value
         }
         
         /// Whether this callback is being sent prior to the change.

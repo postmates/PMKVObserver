@@ -132,6 +132,12 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 
 ## Version History
 
+#### Development
+
+* Work around Xcode 10 issue with value conversions involving `Any` in the `KVObserver.Change` object ([SR-8704][]).
+
+[SR-8704]: https://bugs.swift.org/browse/SR-8704
+
 #### v3.0.2 (2018-05-22)
 
 * Squelch some warnings when building with CocoaPods.
