@@ -132,6 +132,7 @@ extension KVObserver.Change where Value: RawRepresentable {
     }
 }
 
+#if swift(>=4.1)
 public protocol _OptionalRawRepresentable: ExpressibleByNilLiteral {
     associatedtype _Wrapped: RawRepresentable
     init(_ some: _Wrapped)
@@ -161,3 +162,4 @@ extension KVObserver.Change where Value: _OptionalRawRepresentable {
         return .some(Value(wrappedValue))
     }
 }
+#endif

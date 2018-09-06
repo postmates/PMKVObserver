@@ -134,8 +134,11 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 
 #### Development
 
+* Set Swift version to 4.
 * Work around Xcode 10 issue with value conversions involving `Any` in the `KVObserver.Change` object ([SR-8704][]).
 * Handle `RawRepresentable` types in `KVObserver.Change`'s `.old` and `.new` properties.
+
+  **Note:** Optional `RawRepresentable` types (such as those produced by a path like `\.foo?.bar`) are only supported in Swift 4.1 and later.
 
 [SR-8704]: https://bugs.swift.org/browse/SR-8704
 
