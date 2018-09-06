@@ -183,4 +183,21 @@ class KVObserverTests: XCTestCase {
         XCTAssertTrue(fired)
         token.cancel()
     }
+    
+    func testObservingOptionalEnum() {
+        class Wrapper: NSObject {
+            @objc dynamic var helper: KVOHelper? = KVOHelper()
+        }
+        let wrapper = Wrapper()
+        var fired = false
+        let token = KVObserver(object: wrapper, keyPath: \Wrapper.helper?.enumValue, options: [.old, .new]) { (object, change, kvo) in
+            fired = true
+            XCTAssertEqual(change.old, KVOHelper.Enum.zero)
+            XCTAssertEqual(change.new, KVOHelper.Enum.one)
+            kvo.cancel()
+        }
+        wrapper.helper?.enumValue = .one
+        XCTAssertTrue(fired)
+        token.cancel()
+    }
 }
