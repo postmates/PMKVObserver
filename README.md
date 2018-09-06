@@ -1,6 +1,6 @@
 # PMKVObserver
 
-[![Version](https://img.shields.io/badge/version-v3.0.2-blue.svg)](https://github.com/postmates/PMKVObserver/releases/latest)
+[![Version](https://img.shields.io/badge/version-v4.0.0-blue.svg)](https://github.com/postmates/PMKVObserver/releases/latest)
 ![Platforms](https://img.shields.io/badge/platforms-ios%20%7C%20osx%20%7C%20watchos%20%7C%20tvos-lightgrey.svg)
 ![Languages](https://img.shields.io/badge/languages-swift%20%7C%20objc-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)
@@ -90,7 +90,7 @@ Installing as a framework requires a minimum of iOS 8, OS X 10.9, watchOS 2.0, o
 
 If you install by copying the source into your project, it should work on iOS 7 or later (iOS 6 if you remove KVObserver.swift), and OS X 10.7 or later. Please note that it has not been tested on these versions.
 
-PMKVObserver will compile with Xcode 8.3, but the new `KeyPath` APIs require Xcode 9 or later.
+PMKVObserver requires Xcode 9 or higher.
 
 ## Installation
 
@@ -101,7 +101,7 @@ After installing with any mechanism, you can use this by adding `import PMKVObse
 To install using [Carthage][], add the following to your Cartfile:
 
 ```
-github "postmates/PMKVObserver" ~> 3.0
+github "postmates/PMKVObserver" ~> 4.0
 ```
 
 ### CocoaPods
@@ -109,7 +109,7 @@ github "postmates/PMKVObserver" ~> 3.0
 To install using [CocoaPods][], add the following to your Podfile:
 
 ```
-pod 'PMKVObserver', '~> 3.0'
+pod 'PMKVObserver', '~> 4.0'
 ```
 
 [CocoaPods]: https://cocoapods.org
@@ -132,7 +132,7 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 
 ## Version History
 
-#### Development
+#### v4.0.0 (2018-09-05)
 
 * Set Swift version to 4.
 * Work around Xcode 10 issue with value conversions involving `Any` in the `KVObserver.Change` object ([SR-8704][]).
