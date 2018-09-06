@@ -13,7 +13,7 @@
 //
 
 import XCTest
-@testable import PMKVObserver
+import PMKVObserver
 
 class KVObserverTests: XCTestCase {
     var helper: KVOHelper!
