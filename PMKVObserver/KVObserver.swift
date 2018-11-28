@@ -63,6 +63,7 @@ extension KVObserver {
     public struct Change<Value> {
         /// The kind of the change.
         /// - seealso: `NSKeyValueChangeKey.kindKey`
+        @inlinable
         public var kind: NSKeyValueChange {
             // NB: Block-based KVO force-unwraps this, so we'll assume that it's safe to do the same.
             return NSKeyValueChange(rawValue: rawDict[.kindKey] as! UInt)!
@@ -83,9 +84,10 @@ extension KVObserver {
         ///   property being `nil` or being set to `NSNull`.
         ///
         /// - seealso: `NSKeyValueChangeKey.oldKey`
+        @inlinable
         public var old: Value? {
             guard let value = rawDict[.oldKey] else { return nil }
-            return convert(value)
+            return _convert(value)
         }
         
         /// The new value from the change.
@@ -103,19 +105,22 @@ extension KVObserver {
         ///   property being `nil` or being set to `NSNull`.
         ///
         /// - seealso: `NSKeyValueChangeKey.newKey`
+        @inlinable
         public var new: Value? {
             guard let value = rawDict[.newKey] else { return nil }
-            return convert(value)
+            return _convert(value)
         }
         
         /// Whether this callback is being sent prior to the change.
         /// - seealso: `NSKeyValueChangeKey.notificationIsPriorKey`
+        @inlinable
         public var isPrior: Bool {
             return self.rawDict[.notificationIsPriorKey] as? Bool ?? false
         }
         
         /// The indexes of the inserted, removed, or replaced objects when relevant.
         /// - seealso: `NSKeyValueChangeKey.indexesKey`
+        @inlinable
         public var indexes: IndexSet? {
             return self.rawDict[.indexesKey] as? IndexSet
         }
@@ -127,7 +132,8 @@ extension KVObserver {
             self.rawDict = rawDict
         }
         
-        private func convert(_ value: Any) -> Value? {
+        @usableFromInline
+        internal func _convert(_ value: Any) -> Value? {
             if value is NSNull {
                 // NSNull is used by KVO to signal that the property value was nil.
                 if Value.self is Optional<NSNull>.Type {
@@ -166,6 +172,7 @@ extension KVObserver.Change where Value: RawRepresentable {
     
     /// The old value from the change.
     /// - seealso: `NSKeyValueChangeKey.oldKey`
+    @inlinable
     public var old: Value? {
         guard let value = rawDict[.oldKey] else { return nil }
         return (value as? Value.RawValue).flatMap(Value.init(rawValue:))
@@ -173,6 +180,7 @@ extension KVObserver.Change where Value: RawRepresentable {
     
     /// The new value from the change.
     /// - seealso: `NSKeyValueChangeKey.newKey`
+    @inlinable
     public var new: Value? {
         guard let value = rawDict[.newKey] else { return nil }
         return (value as? Value.RawValue).flatMap(Value.init(rawValue:))
@@ -195,6 +203,7 @@ extension KVObserver.Change where Value: _OptionalRawRepresentable {
     ///   will be treated as `nil` for the purposes of casting to `Value`.
     ///
     /// - seealso: `NSKeyValueChangeKey.oldKey`
+    @inlinable
     public var old: Value? {
         guard let value = rawDict[.oldKey] else { return nil }
         guard let rawValue = value as? Value._Wrapped.RawValue,
@@ -209,6 +218,7 @@ extension KVObserver.Change where Value: _OptionalRawRepresentable {
     ///   be treated as `nil` for the purposes of casting to `Value`.
     ///
     /// - seealso: `NSKeyValueChangeKey.newKey`
+    @inlinable
     public var new: Value? {
         guard let value = rawDict[.newKey] else { return nil }
         guard let rawValue = value as? Value._Wrapped.RawValue,
