@@ -69,6 +69,14 @@ __attribute__((objc_subclassing_restricted))
 /// Unregisters the KVO. This can be called multiple times and can be called from any thread.
 - (void)cancel;
 
+/// The object that is being observed for KVO changes.
+///
+/// \note This property does not support key-value observing.
+@property (atomic, readonly, weak, nullable) id object;
+
+/// The key path that is being observed for KVO changes.
+@property (atomic, readonly, nonnull) NSString *keyPath NS_SWIFT_NAME(objcKeyPath);
+
 /// Returns \c YES iff the observer has already been cancelled.
 ///
 /// Returns \c YES if \c -cancel has been invoked on any thread. If \c -cancel is invoked
@@ -76,7 +84,7 @@ __attribute__((objc_subclassing_restricted))
 /// on the precise timing involved.
 ///
 /// \note This property does not support key-value observing.
-@property (atomic, readonly, getter=isCancelled) BOOL cancelled __attribute__((swift_private));
+@property (atomic, readonly, getter=isCancelled) BOOL cancelled NS_REFINED_FOR_SWIFT;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -327,6 +327,23 @@ class KVObserverTests: XCTestCase {
         helper.optNull = nil
         XCTAssertEqual(fireCount, 3)
         token.cancel()
-
+    }
+    
+    func testObject() {
+        let token: KVObserver
+        do {
+            let object = NSObject()
+            token = KVObserver(object: object, keyPath: \.description, block: { (_, _, _) in })
+            XCTAssert(token.object === object)
+            token.cancel()
+            XCTAssert(token.object === object)
+        }
+        XCTAssertNil(token.object)
+    }
+    
+    func testKeyPath() {
+        XCTAssertEqual(KVObserver(object: helper, keyPath: \.str, block: { (_, _, _) in }).objcKeyPath, #keyPath(KVOHelper.str))
+        XCTAssertEqual(KVObserver(object: helper, keyPath: \.optNum, block: { (_, _, _) in }).objcKeyPath, #keyPath(KVOHelper.optNum))
+        XCTAssertEqual(KVObserver(object: helper, keyPath: \.num.description, block: { (_, _, _) in }).objcKeyPath, #keyPath(KVOHelper.num.description))
     }
 }

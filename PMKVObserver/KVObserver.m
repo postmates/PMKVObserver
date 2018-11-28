@@ -73,6 +73,8 @@ static BOOL unfair_locks_available = NO;
         os_unfair_lock unfair;
     } _lock;
 }
+@synthesize object=_object;
+@synthesize keyPath=_keyPath;
 
 + (void)initialize {
     if (self == [PMKVObserver class]) {

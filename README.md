@@ -132,6 +132,10 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 
 ## Version History
 
+#### Development
+
+- Add `.object` and `.keyPath` properties to `PMKVObserver`. The `.keyPath` property is named `.objcKeyPath` in Swift.
+
 #### v4.1.0 (2018-11-27)
 
 - Handle observing optional values better. We now make stronger guarantees about when `.old` and `.new` are non-`nil`.
