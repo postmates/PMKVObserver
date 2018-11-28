@@ -69,17 +69,43 @@ extension KVObserver {
         }
         
         /// The old value from the change.
+        ///
+        /// - Note: If the Obj-C change dictionary contains an `.oldKey` with a value of `NSNull` it
+        ///   will be treated as `nil` for the purposes of casting to `Value`, unless `Value` itself
+        ///   is `NSNull` or `Any`. This means that if `Value` is an optional type then the value of
+        ///   this property will be `.some(.none)` when `.oldKey` is `NSNull`.
+        ///
+        ///   Note that if `Value` is `Any?` then the `NSNull` value will end up as `.some(.none)`
+        ///   instead of staying as `NSNull`.
+        /// - Bug: If `Value` is `NSNull?` this property will always be `nil` even when the change
+        ///   dictionary contains an `.oldKey`. This is because Obj-C KVO change dictionaries
+        ///   represent `nil` values as `NSNull` and so there is no way to distinguish between the
+        ///   property being `nil` or being set to `NSNull`.
+        ///
         /// - seealso: `NSKeyValueChangeKey.oldKey`
         public var old: Value? {
             guard let value = rawDict[.oldKey] else { return nil }
-            return value as? Value
+            return convert(value)
         }
         
         /// The new value from the change.
+        ///
+        /// - Note: If the Obj-C change dictionary contains a `.newKey` with a value of `NSNull` it
+        ///   will be treated as `nil` for the purposes of casting to `Value`, unless `Value` itself
+        ///   is `NSNull` or `Any`. This means that if `Value` is an optional type then the value of
+        ///   this property will be `.some(.none)` when `.newKey` is `NSNull`.
+        ///
+        ///   Note that if `Value` is `Any?` then the `NSNull` value will end up as `.some(.none)`
+        ///   instead of staying as `NSNull`.
+        /// - Bug: If `Value` is `NSNull?` this property will always be `nil` even when the change
+        ///   dictionary contains a `.newKey`. This is because Obj-C KVO change dictionaries
+        ///   represent `nil` values as `NSNull` and so there is no way to distinguish between the
+        ///   property being `nil` or being set to `NSNull`.
+        ///
         /// - seealso: `NSKeyValueChangeKey.newKey`
         public var new: Value? {
             guard let value = rawDict[.newKey] else { return nil }
-            return value as? Value
+            return convert(value)
         }
         
         /// Whether this callback is being sent prior to the change.
@@ -99,6 +125,27 @@ extension KVObserver {
         
         fileprivate init(rawDict: [NSKeyValueChangeKey: Any]) {
             self.rawDict = rawDict
+        }
+        
+        private func convert(_ value: Any) -> Value? {
+            if value is NSNull {
+                // NSNull is used by KVO to signal that the property value was nil.
+                if Value.self is Optional<NSNull>.Type {
+                    // We can't tell the difference with `NSNull?` between `NSNull` and `nil`
+                    return nil
+                } else if let value = value as? Value,
+                    // Only pass this through if the desired type is NSNull or Any
+                    Value.self is NSNull.Type || Value.self is Any.Protocol
+                {
+                    return value
+                } else {
+                    // Try to convert nil to Value. This way if Value is optional we'll get a
+                    // .some(.none) result.
+                    return Optional<Any>.none as? Value
+                }
+            } else {
+                return value as? Value
+            }
         }
     }
     
@@ -143,6 +190,10 @@ extension Optional: _OptionalRawRepresentable where Wrapped: RawRepresentable {
 
 extension KVObserver.Change where Value: _OptionalRawRepresentable {
     /// The old value from the change.
+    ///
+    /// - Note: If the Obj-C change dictionary contains an `.oldKey` with a value of `NSNull` it
+    ///   will be treated as `nil` for the purposes of casting to `Value`.
+    ///
     /// - seealso: `NSKeyValueChangeKey.oldKey`
     public var old: Value? {
         guard let value = rawDict[.oldKey] else { return nil }
@@ -153,6 +204,10 @@ extension KVObserver.Change where Value: _OptionalRawRepresentable {
     }
     
     /// The new value from the change.
+    ///
+    /// - Note: If the Obj-C change dictionary contains a `.newKey` with a value of `NSNull` it will
+    ///   be treated as `nil` for the purposes of casting to `Value`.
+    ///
     /// - seealso: `NSKeyValueChangeKey.newKey`
     public var new: Value? {
         guard let value = rawDict[.newKey] else { return nil }

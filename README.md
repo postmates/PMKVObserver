@@ -132,6 +132,10 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 
 ## Version History
 
+#### Development
+
+- Handle observing optional values better. We now make stronger guarantees about when `.old` and `.new` are non-`nil`.
+
 #### v4.0.0 (2018-09-05)
 
 * Set Swift version to 4.

@@ -44,4 +44,10 @@ public final class KVOHelper: NSObject {
     }
     
     @objc public dynamic var enumValue: Enum = .zero
+    
+    @objc public dynamic var any: Any = 42
+    @objc public dynamic var optAny: Any?
+    
+    @objc public dynamic var null: NSNull = NSNull()
+    @objc public dynamic var optNull: NSNull?
 }

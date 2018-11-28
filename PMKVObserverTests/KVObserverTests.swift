@@ -184,18 +184,149 @@ class KVObserverTests: XCTestCase {
     
     func testObservingOptionalEnum() {
         class Wrapper: NSObject {
-            @objc dynamic var helper: KVOHelper? = KVOHelper()
+            @objc dynamic var helper: KVOHelper?
         }
         let wrapper = Wrapper()
-        var fired = false
-        let token = KVObserver(object: wrapper, keyPath: \Wrapper.helper?.enumValue, options: [.old, .new]) { (object, change, kvo) in
-            fired = true
-            XCTAssertEqual(change.old, KVOHelper.Enum.zero)
-            XCTAssertEqual(change.new, KVOHelper.Enum.one)
-            kvo.cancel()
+        var fireCount = 0
+        let token = KVObserver(object: wrapper, keyPath: \Wrapper.helper?.enumValue, options: [.initial, .old, .new]) { (object, change, kvo) in
+            defer { fireCount += 1 }
+            switch fireCount {
+            case 0:
+                XCTAssertEqual(change.old, KVOHelper.Enum??.none)
+                XCTAssertEqual(change.new, .some(.none))
+            case 1:
+                XCTAssertEqual(change.old, .some(.none))
+                XCTAssertEqual(change.new, KVOHelper.Enum.zero)
+            case 2:
+                XCTAssertEqual(change.old, KVOHelper.Enum.zero)
+                XCTAssertEqual(change.new, KVOHelper.Enum.one)
+            case 3:
+                XCTAssertEqual(change.old, KVOHelper.Enum.one)
+                XCTAssertEqual(change.new, .some(.none))
+            default:
+                XCTFail("Unexpected fire count \(fireCount)")
+            }
         }
+        wrapper.helper = KVOHelper()
         wrapper.helper?.enumValue = .one
-        XCTAssertTrue(fired)
+        wrapper.helper = nil
+        XCTAssertEqual(fireCount, 4)
         token.cancel()
+    }
+    
+    func testObservingOptionalValue() {
+        var fireCount = 0
+        let token = KVObserver(object: helper, keyPath: \.optNum, options: [.initial, .old, .new]) { (object, change, kvo) in
+            defer { fireCount += 1 }
+            switch fireCount {
+            case 0: // initial
+                XCTAssertEqual(change.old, NSNumber??.none)
+                XCTAssertEqual(change.new, .some(.none))
+            case 1:
+                XCTAssertEqual(change.old, .some(.none))
+                XCTAssertEqual(change.new, 42)
+            case 2:
+                XCTAssertEqual(change.old, 42)
+                XCTAssertEqual(change.new, 84)
+            case 3:
+                XCTAssertEqual(change.old, 84)
+                XCTAssertEqual(change.new, .some(.none))
+            default:
+                XCTFail("Unexpected fire count \(fireCount)")
+            }
+        }
+        helper.optNum = 42
+        helper.optNum = 84
+        helper.optNum = nil
+        XCTAssertEqual(fireCount, 4)
+        token.cancel()
+    }
+    
+    func testObservingAnyWithNSNull() {
+        // Any will preserve NSNull values
+        var fireCount = 0
+        let token = KVObserver(object: helper, keyPath: \.any, options: [.initial, .old, .new]) { (object, change, kvo) in
+            defer { fireCount += 1 }
+            if fireCount == 0 { // initial
+                XCTAssertNil(change.old)
+                XCTAssert(change.new as? Int == 42, "expected 42, got \(change.new as Any)")
+            } else {
+                XCTAssert(change.old as? Int == 42, "expected 42, got \(change.old as Any)")
+                XCTAssert(change.new is NSNull, "expected NSNull, got \(change.new as Any)")
+            }
+        }
+        helper.any = NSNull()
+        XCTAssertEqual(fireCount, 2)
+        token.cancel()
+    }
+    
+    func testObservingOptAnyWithNSNull() {
+        // Any? won't preserve NSNull values
+        var fireCount = 0
+        let token = KVObserver(object: helper, keyPath: \.optAny, options: [.initial, .old, .new]) { (object, change, kvo) in
+            defer { fireCount += 1 }
+            switch fireCount {
+            case 0: // initial
+                switch change.old {
+                case Optional<Any?>.none: break
+                default: XCTFail("expected .none, got \(change.old as Any)")
+                }
+                switch change.new {
+                case Optional<Any?>.some(.none): break
+                default: XCTFail("expected .some(.none), got \(change.new as Any)")
+                }
+            case 1: // set to 42
+                switch change.old {
+                case Optional<Any?>.some(.none): break
+                default: XCTFail("expected .some(.none), got \(change.old as Any)")
+                }
+                XCTAssert(change.new as? Int == 42, "expected 42, got \(change.new as Any)")
+            case 2: // set to NSNull
+                XCTAssert(change.old as? Int == 42, "expected 42, got \(change.old as Any)")
+                switch change.new {
+                case Optional<Any?>.some(.none): break
+                default: XCTFail("expected .some(.none), got \(change.new as Any)")
+                }
+            default:
+                XCTFail("Unexpected fire count \(fireCount)")
+            }
+        }
+        helper.optAny = 42
+        helper.optAny = NSNull()
+        XCTAssertEqual(fireCount, 3)
+        token.cancel()
+    }
+    
+    func testObservingNull() {
+        // NSNull will preserve NSNull values
+        var fireCount = 0
+        let token = KVObserver(object: helper, keyPath: \.null, options: [.initial, .old, .new]) { (object, change, kvo) in
+            defer { fireCount += 1 }
+            if fireCount == 0 { // initial
+                XCTAssertNil(change.old)
+                XCTAssertNotNil(change.new)
+            } else {
+                XCTAssertNotNil(change.old)
+                XCTAssertNotNil(change.new)
+            }
+        }
+        helper.null = NSNull()
+        XCTAssertEqual(fireCount, 2)
+        token.cancel()
+    }
+    
+    func testObservingOptNullWithNSNull() {
+        // NSNull? won't preserve NSNull values, and in fact will always return `nil`
+        var fireCount = 0
+        let token = KVObserver(object: helper, keyPath: \.optNull, options: [.initial, .old, .new]) { (object, change, kvo) in
+            defer { fireCount += 1 }
+            XCTAssertEqual(change.old, NSNull??.none)
+            XCTAssertEqual(change.new, NSNull??.none)
+        }
+        helper.optNull = NSNull()
+        helper.optNull = nil
+        XCTAssertEqual(fireCount, 3)
+        token.cancel()
+
     }
 }
