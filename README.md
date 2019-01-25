@@ -132,6 +132,10 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 
 ## Version History
 
+#### Development
+
+- Fix compatibility with Swift compiler versions other than 4.2 when observing optional values and KVO delivers an `NSNull` value.
+
 #### v4.1.1 (2018-11-28)
 
 - Add `.object` and `.keyPath` properties to `PMKVObserver`. The `.keyPath` property is named `.objcKeyPath` in Swift.

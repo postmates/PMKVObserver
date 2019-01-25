@@ -147,7 +147,15 @@ extension KVObserver {
                 } else {
                     // Try to convert nil to Value. This way if Value is optional we'll get a
                     // .some(.none) result.
+                    #if swift(>=5)
                     return Optional<Any>.none as? Value
+                    #else
+                    if let type = Value.self as? _OptionalProtocol.Type {
+                        return .some(type.init(nilLiteral: ()) as! Value)
+                    } else {
+                        return nil
+                    }
+                    #endif
                 }
             } else {
                 return value as? Value
@@ -166,6 +174,11 @@ extension KVObserver {
         return __isCancelled
     }
 }
+
+#if !swift(>=5)
+protocol _OptionalProtocol: ExpressibleByNilLiteral {}
+extension Optional: _OptionalProtocol {}
+#endif
 
 extension KVObserver.Change where Value: RawRepresentable {
     // Override old and new to do RawRepresentable conversions
