@@ -13,7 +13,7 @@ PMKVObserver provides a safe block-based wrapper around Key-Value Observing, wit
                    DESC
   s.homepage     = "https://github.com/postmates/PMKVObserver"
   s.license      = { :type => "MIT", :file => "LICENSE-MIT" }
-  s.author       = { "Kevin Ballard" => "kevin.ballard@postmates.com" }
+  s.author       = { "Lily Ballard" => "lily@sb.org" }
   s.source       = { :git => "https://github.com/postmates/PMKVObserver.git", :tag => "v#{s.version}" }
   s.requires_arc = true
 
