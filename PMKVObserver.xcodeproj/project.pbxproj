@@ -167,7 +167,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0710;
-				LastUpgradeCheck = 0940;
+				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = Postmates;
 				TargetAttributes = {
 					9EE8AAF01BFD5B9B00739406 = {
@@ -182,10 +182,11 @@
 			};
 			buildConfigurationList = 9EE8AAEB1BFD5B9B00739406 /* Build configuration list for PBXProject "PMKVObserver" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 9EE8AAE71BFD5B9B00739406;
 			productRefGroup = 9EE8AAF21BFD5B9B00739406 /* Products */;
