@@ -172,11 +172,11 @@
 				TargetAttributes = {
 					9EE8AAF01BFD5B9B00739406 = {
 						CreatedOnToolsVersion = 7.1.1;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1130;
 					};
 					9EE8AAFA1BFD5B9B00739406 = {
 						CreatedOnToolsVersion = 7.1.1;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1130;
 					};
 				};
 			};
@@ -379,7 +379,7 @@
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx watchsimulator watchos appletvsimulator appletvos";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -398,7 +398,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx watchsimulator watchos appletvsimulator appletvos";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -414,7 +414,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos appletvsimulator appletvos";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -429,7 +429,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.postmates.PMKVObserverTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos appletvsimulator appletvos";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
