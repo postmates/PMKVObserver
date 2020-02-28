@@ -13,6 +13,7 @@ PMKVObserver provides a safe block-based wrapper around Key-Value Observing, wit
 
 * Thread-safety. Observers can be registered on a different thread than KVO notifications are sent on, and can be cancelled on yet another thread. An observer can even be cancelled from two threads simultaneously.
 * Automatic unregistering when the observed object deallocates.
+  * Note: nested key paths are not supported at this time and manual cancellation should be used; [more info here](https://github.com/postmates/PMKVObserver/issues/20)
 * Support for providing an observing object that is given to the block, and automatic unregistering when this observing object deallocates. This lets you call methods on `self` without retaining it or dealing with a weak reference.
 * Thread-safety for the automatic deallocation. This protects against receiving messages on another thread while the object is deallocating.
 * First-class support for both Obj-C and Swift, including strong typing in the Swift API.
