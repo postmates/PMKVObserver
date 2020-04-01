@@ -1,6 +1,6 @@
 # PMKVObserver
 
-[![Version](https://img.shields.io/badge/version-v4.1.2-blue.svg)](https://github.com/postmates/PMKVObserver/releases/latest)
+[![Version](https://img.shields.io/badge/version-v4.1.3-blue.svg)](https://github.com/postmates/PMKVObserver/releases/latest)
 ![Platforms](https://img.shields.io/badge/platforms-ios%20%7C%20osx%20%7C%20watchos%20%7C%20tvos-lightgrey.svg)
 ![Languages](https://img.shields.io/badge/languages-swift%20%7C%20objc-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)
@@ -133,7 +133,7 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 
 ## Version History
 
-#### Development
+#### v4.1.3 (2020-04-01)
 
 - Work around bug with Swift compiler 5.1.5 and above relating to properties of type `Any?` ([#25][], [SR-12486][]).
 
