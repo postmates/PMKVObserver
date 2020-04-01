@@ -133,6 +133,13 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 
 ## Version History
 
+#### Development
+
+- Work around bug with Swift compiler 5.1.5 and above relating to properties of type `Any?` ([#25][], [SR-12486][]).
+
+[#25]: https://github.com/postmates/PMKVObserver/issues/25 "Swift 5.1.5 and 5.2 break observation of properties of type Any?"
+[SR-12486]: https://bugs.swift.org/browse/SR-12486 "`Value.self is Any.Protocol` broke in 5.1, got bad warning in 5.2"
+
 #### v4.1.2 (2019-01-24)
 
 - Fix compatibility with Swift compiler versions other than 4.2 when observing optional values and KVO delivers an `NSNull` value.

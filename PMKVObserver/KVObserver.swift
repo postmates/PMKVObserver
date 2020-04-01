@@ -136,12 +136,12 @@ extension KVObserver {
         internal func _convert(_ value: Any) -> Value? {
             if value is NSNull {
                 // NSNull is used by KVO to signal that the property value was nil.
-                if Value.self is Optional<NSNull>.Type {
+                if Value.self == Optional<NSNull>.self {
                     // We can't tell the difference with `NSNull?` between `NSNull` and `nil`
                     return nil
                 } else if let value = value as? Value,
                     // Only pass this through if the desired type is NSNull or Any
-                    Value.self is NSNull.Type || Value.self is Any.Protocol
+                    Value.self == NSNull.self || Value.self == Any.self
                 {
                     return value
                 } else {
