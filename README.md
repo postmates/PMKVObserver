@@ -1,6 +1,6 @@
 # Now Archived and Forked
 
-PMKVObserver will not be maintained in this repository going forward. Please use, create issues on, and make PRs to the fork of this PMKVObserver located [here.](https://github.com/PMSwift/PMKVObserver)
+PMKVObserver will not be maintained in this repository going forward. Please use, create issues on, and make PRs to [the fork of PMKVObserver located here.](https://github.com/PMSwift/PMKVObserver)
 
 # PMKVObserver
 
