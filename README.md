@@ -1,3 +1,7 @@
+# Archived
+
+This repo will not be maintained going forward. Please use, create issues on, and make PRs to the fork of this repo located [here.](https://github.com/PMSwift/PMKVObserver)
+
 # PMKVObserver
 
 [![Version](https://img.shields.io/badge/version-v4.1.3-blue.svg)](https://github.com/postmates/PMKVObserver/releases/latest)
